@@ -1,7 +1,7 @@
 ---
 services:
   caddy:
-    image: caddy:${CADDY_VERSION:-latest}
+    build: ./caddy
     restart: unless-stopped
     ports:
       - "80:80"
@@ -28,8 +28,6 @@ services:
       ntfy:
         condition: service_healthy
       qbittorrent:
-        condition: service_healthy
-      proxy:
         condition: service_healthy
 
   synapse:
@@ -137,19 +135,6 @@ services:
       - NTFY_BASE_URL=https://ntfy.${DOMAIN}
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:80/v1/health"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
-
-  proxy:
-    build: ./proxy
-    restart: unless-stopped
-    environment:
-      - PROXY_USER=${PROXY_USER}
-      - PROXY_PASS=${PROXY_PASS}
-    healthcheck:
-      test: ["CMD", "squid", "-k", "check"]
       interval: 30s
       timeout: 5s
       retries: 3

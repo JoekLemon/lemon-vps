@@ -24,7 +24,7 @@ bash <(curl -s https://raw.githubusercontent.com/JoekLemon/lemon-vps/main/setup.
 
 | Service | Subdomain | Purpose |
 |---------|-----------|---------|
-| **Caddy** | `*` | Reverse proxy + auto-TLS |
+| **Caddy** | `*` | Reverse proxy + auto-TLS + forward proxy |
 | **Matrix Synapse** | `matrix.*` | Federated chat |
 | **NextCloud** | `cloud.*` | File storage |
 | **Gitea** | `git.*` | Git hosting |
@@ -32,7 +32,6 @@ bash <(curl -s https://raw.githubusercontent.com/JoekLemon/lemon-vps/main/setup.
 | **qBittorrent** | `torrent.*` | Torrent client |
 | **Icecast** | `radio.*` | Audio streaming |
 | **NTFY.sh** | `ntfy.*` | Push notifications |
-| **Forward Proxy** | `proxy.*` | HTTP/HTTPS proxy |
 
 ## Supported OS
 
@@ -70,7 +69,7 @@ Streams from `/home/$USER/Music`.
 Push notifications at `ntfy.yourdomain.com`.
 
 ### Forward Proxy
-HTTP/HTTPS proxy at `proxy.yourdomain.com`.
+HTTP/HTTPS proxy built into Caddy at `proxy.yourdomain.com`.
 
 ## Updating
 

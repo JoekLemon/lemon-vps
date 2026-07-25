@@ -52,7 +52,7 @@ Single domain with subdomains:
 
 | Container | Subdomain | Purpose |
 |-----------|-----------|---------|
-| Caddy | `*` | Reverse proxy, auto-TLS |
+| Caddy | `*` | Reverse proxy, auto-TLS, forward proxy |
 | Matrix Synapse | `matrix.*` | Federated chat |
 | NextCloud | `cloud.*` | File storage |
 | Gitea | `git.*` | Git hosting |
@@ -60,7 +60,6 @@ Single domain with subdomains:
 | qBittorrent | `torrent.*` | Torrent client |
 | Icecast | `radio.*` | Audio streaming |
 | NTFY.sh | `ntfy.*` | Push notifications (auth) |
-| Forward Proxy | `proxy.*` | HTTP/HTTPS proxy |
 
 ---
 
@@ -128,6 +127,7 @@ lemon-vps/
 │   ├── docker-compose.yml
 │   ├── .env.template
 │   ├── caddy/
+│   │   ├── Dockerfile
 │   │   └── Caddyfile.template
 │   ├── synapse/
 │   │   └── homeserver.yaml.template
@@ -137,9 +137,6 @@ lemon-vps/
 │   │   └── app.ini.template
 │   ├── gitea-runner/
 │   │   └── config.template
-│   ├── proxy/
-│   │   ├── Dockerfile
-│   │   └── config/
 │   ├── qbittorrent/
 │   │   └── qBittorrent.conf.template
 │   ├── icecast/
@@ -201,7 +198,7 @@ Generated at install time by `scripts/generate-configs.sh`.
 | 2026-07-25 | qBittorrent public with auth | torrent.domain.tld |
 | 2026-07-25 | Shared Music volume | qBittorrent downloads → Icecast streams |
 | 2026-07-25 | matrix. subdomain | User preference |
-| 2026-07-25 | Keep Squid forward proxy | Different from Caddy reverse proxy |
+| 2026-07-25 | Caddy forward proxy plugin | Simplified - no separate Squid container |
 | 2026-07-25 | Image versions in .env | Easy updates, version pinning |
 | 2026-07-25 | Healthchecks on all services | Ensure dependencies are ready |
 | 2026-07-25 | Hardened ClamAV config | Security-focused defaults |
