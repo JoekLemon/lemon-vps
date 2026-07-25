@@ -1,0 +1,20 @@
+[Unit]
+Description=ClamAV Full System Scan with freshclam update
+Requires=clamav-daemon.service
+After=clamav-daemon.service syslog.target network.target
+Documentation=man:freshclam(1) https://www.clamav.net/documents/
+Documentation=man:clamscan(1) https://www.clamav.net/documents/
+
+[Service]
+Type=oneshot
+User=root
+ExecStartPre=/usr/bin/freshclam --quiet
+ExecStart=/usr/bin/clamscan --recursive --infected --move=/var/log/clamav/quarantine --log=/var/log/clamav/clamscan.log --exclude-dir=/var/log/clamav/ --exclude-dir=/proc/ --exclude-dir=/sys/ --exclude-dir=/dev/ --exclude-dir=/run/ --exclude-dir=/var/lib/docker/ --exclude-dir=/var/lib/containerd/ --exclude-dir=/boot/ --exclude-dir=/snap/ --quiet /
+ExecStartPost=/usr/bin/systemctl start clamav-logrotate.service
+SuccessExitStatus=0
+Nice=10
+IOSchedulingClass=2
+IOSchedulingPriority=7
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=clamscan

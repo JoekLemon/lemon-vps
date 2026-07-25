@@ -1,0 +1,28 @@
+# Generated configs (contain secrets)
+docker/.env
+docker/caddy/Caddyfile
+docker/synapse/homeserver.yaml
+docker/gitea/app.ini
+docker/gitea-runner/config.yaml
+docker/icecast/icecast.xml
+docker/qbittorrent/qBittorrent.conf
+host/wireguard/wg0.conf
+host/crowdsec/config/crowdsec.yaml
+host/crowdsec/config/acquis.yaml
+
+# Persistent data
+docker/*/data/
+host/*/data/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+*~
+*.bak
+
+# Logs
+*.log

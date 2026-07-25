@@ -1,0 +1,56 @@
+<icecast>
+    <location>Lemon VPS</location>
+    <admin>{{ADMIN_USER}}@{{DOMAIN}}</admin>
+
+    <limits>
+        <clients>100</clients>
+        <sources>5</sources>
+        <queue-size>524288</queue-size>
+        <client-timeout>30</client-timeout>
+        <header-timeout>15</header-timeout>
+        <source-timeout>10</source-timeout>
+        <burst-on-connect>1</burst-on-connect>
+        <burst-size>65535</burst-size>
+    </limits>
+
+    <authentication>
+        <source-password>{{ICECAST_SOURCE_PASS}}</source-password>
+        <relay-password>{{ICECAST_SOURCE_PASS}}</relay-password>
+        <admin-user>{{ADMIN_USER}}</admin-user>
+        <admin-password>{{ADMIN_PASS}}</admin-password>
+    </authentication>
+
+    <hostname>{{DOMAIN}}</hostname>
+
+    <listen-socket>
+        <port>8000</port>
+    </listen-socket>
+
+    <mount>
+        <mount-name>/stream</mount-name>
+        <fallback-mount>/static</fallback-mount>
+        <fallback-override>1</fallback-override>
+        <fallback-secure>1</fallback-secure>
+    </mount>
+
+    <fileserve>
+        <aliases>
+            <alias name="/static" destination="/music"/>
+        </aliases>
+    </fileserve>
+
+    <paths>
+        <basedir>/usr/share/icecast</basedir>
+        <logdir>/var/log/icecast</logdir>
+        <webroot>/usr/share/icecast/web</webroot>
+        <adminroot>/usr/share/icecast/admin</adminroot>
+        <alias source="/" destination="/status.xsl"/>
+    </paths>
+
+    <logging>
+        <accesslog>access.log</accesslog>
+        <errorlog>error.log</errorlog>
+        <loglevel>3</loglevel>
+        <logsize>10000</logsize>
+    </logging>
+</icecast>

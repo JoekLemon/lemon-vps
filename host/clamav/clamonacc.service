@@ -1,0 +1,19 @@
+[Unit]
+Description=ClamAV On Access Scanner
+Requires=clamav-daemon.service
+After=clamav-daemon.service syslog.target network.target
+Documentation=man:clamonacc(8) https://www.clamav.net/documents/
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/sbin/clamonacc --foreground --fdpass --log=/var/log/clamav/clamonacc.log --move=/var/log/clamav/quarantine
+Restart=on-failure
+RestartSec=120s
+LimitNOFILE=65536
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=clamonacc
+
+[Install]
+WantedBy=multi-user.target

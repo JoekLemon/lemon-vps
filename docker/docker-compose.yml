@@ -1,0 +1,156 @@
+---
+services:
+  caddy:
+    image: caddy:${CADDY_VERSION:-latest}
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./caddy/data:/data
+      - ./caddy/config:/config
+    healthcheck:
+      test: ["CMD", "caddy", "version"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    depends_on:
+      synapse:
+        condition: service_healthy
+      nextcloud:
+        condition: service_healthy
+      gitea:
+        condition: service_healthy
+      icecast:
+        condition: service_healthy
+      ntfy:
+        condition: service_healthy
+      qbittorrent:
+        condition: service_healthy
+      proxy:
+        condition: service_healthy
+
+  synapse:
+    image: matrixdotorg/synapse:${SYNAPSE_VERSION:-latest}
+    restart: unless-stopped
+    volumes:
+      - ./synapse/data:/data
+      - ./synapse/homeserver.yaml:/data/homeserver.yaml:ro
+    environment:
+      - SYNAPSE_SERVER_NAME=${MATRIX_SERVER_NAME}
+      - SYNAPSE_REPORT_STATS=no
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8008/_matrix/client/versions"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  nextcloud:
+    image: nextcloud:${NEXTCLOUD_VERSION:-latest}
+    restart: unless-stopped
+    volumes:
+      - ./nextcloud/data:/var/www/html
+    environment:
+      - NEXTCLOUD_ADMIN_USER=${ADMIN_USER}
+      - NEXTCLOUD_ADMIN_PASSWORD=${ADMIN_PASS}
+      - NEXTCLOUD_TRUSTED_DOMAINS=https://cloud.${DOMAIN}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/status.php"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  gitea:
+    image: gitea/gitea:${GITEA_VERSION:-latest}
+    restart: unless-stopped
+    volumes:
+      - ./gitea/data:/data
+      - ./gitea/app.ini:/data/gitea/conf/app.ini:ro
+    environment:
+      - GITEA__database__DB_TYPE=sqlite3
+      - GITEA__server__ROOT_URL=https://git.${DOMAIN}
+      - GITEA__server__DOMAIN=${DOMAIN}
+      - GITEA__security__INSTALL_LOCK=true
+      - GITEA__service__DISABLE_REGISTRATION=false
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/v1/version"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  gitea-runner:
+    image: gitea/act_runner:${GITEA_RUNNER_VERSION:-latest}
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./gitea-runner/config.yaml:/config.yaml:ro
+    depends_on:
+      gitea:
+        condition: service_healthy
+
+  icecast:
+    image: icecast:${ICECAST_VERSION:-latest}
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./icecast/icecast.xml:/etc/icecast.xml:ro
+      - ${QBIT_SAVE_PATH:-/home/user/Music}:/music:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/status.xsl"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:${QBITTORRENT_VERSION:-latest}
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=UTC
+      - WEBUI_PORT=8080
+    volumes:
+      - ./qbittorrent/config:/config
+      - ${QBIT_SAVE_PATH:-/home/user/Music}:/downloads
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  ntfy:
+    image: binwiederhier/ntfy:${NTFY_VERSION:-latest}
+    restart: unless-stopped
+    command: serve
+    volumes:
+      - ./ntfy/data:/var/cache/ntfy
+      - ./ntfy/config:/etc/ntfy:ro
+    environment:
+      - NTFY_BASE_URL=https://ntfy.${DOMAIN}
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:80/v1/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  proxy:
+    build: ./proxy
+    restart: unless-stopped
+    environment:
+      - PROXY_USER=${PROXY_USER}
+      - PROXY_PASS=${PROXY_PASS}
+    healthcheck:
+      test: ["CMD", "squid", "-k", "check"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

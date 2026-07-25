@@ -1,0 +1,16 @@
+[Unit]
+Description=ClamAV Logrotate Service
+Documentation=man:logrotate(8) https://linux.die.net/man/8/logrotate
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=/usr/local/bin/clamav-logrotate
+Restart=on-failure
+RestartSec=30
+Nice=10
+IOSchedulingClass=2
+IOSchedulingPriority=7
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=clamav-logrotate
