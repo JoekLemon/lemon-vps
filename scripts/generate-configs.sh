@@ -12,6 +12,16 @@ generate_configs() {
 
     echo "🔧 Generating configs from templates..."
 
+    # Install wireguard-tools for key generation
+    echo "   Installing WireGuard tools..."
+    if command -v apt > /dev/null 2>&1; then
+        apt install --yes --quiet wireguard-tools > /dev/null 2>&1
+    elif command -v dnf > /dev/null 2>&1; then
+        dnf install --yes wireguard-tools > /dev/null 2>&1
+    elif command -v yum > /dev/null 2>&1; then
+        yum install --yes wireguard-tools > /dev/null 2>&1
+    fi
+
     # Generate WireGuard keys
     echo "   Generating WireGuard keys..."
     WG_PRIVATE_KEY=$(wg genkey)
@@ -39,15 +49,12 @@ generate_configs() {
             -e "s|{{WG_PUBLIC_KEY}}|$WG_PUBLIC_KEY|g" \
             -e "s|{{WG_PRESHARED_KEY}}|$WG_PRESHARED_KEY|g" \
             -e "s|{{WG_PEER_PUBKEY}}|$WG_PEER_PUBKEY|g" \
-            -e "s|{{ICECAST_SOURCE_PASS}}|$ICECAST_SOURCE_PASS|g" \
             -e "s|{{QBIT_SAVE_PATH}}|$QBIT_SAVE_PATH|g" \
             -e "s|{{NTFY_TOPIC}}|$NTFY_TOPIC|g" \
             -e "s|{{NTFY_TOKEN}}|$NTFY_TOKEN|g" \
             -e "s|{{PROXY_AUTH}}|$PROXY_AUTH|g" \
             -e "s|{{PROXY_USER}}|$PROXY_USER|g" \
-            -e "s|{{PROXY_PASS}}|$PROXY_PASS|g" \
-            -e "s|{{CROWDSEC_CUSTOMER_ID}}|$CROWDSEC_CUSTOMER_ID|g" \
-            -e "s|{{CROWDSEC_API_KEY}}|$CROWDSEC_API_KEY|g"
+            -e "s|{{PROXY_PASS}}|$PROXY_PASS|g"
     }
 
     # Docker configs
@@ -57,14 +64,24 @@ generate_configs() {
     sed_replace < "$src_dir/docker/synapse/homeserver.yaml.template" > "$src_dir/docker/synapse/homeserver.yaml"
     sed_replace < "$src_dir/docker/gitea/app.ini.template" > "$src_dir/docker/gitea/app.ini"
     sed_replace < "$src_dir/docker/gitea-runner/config.template" > "$src_dir/docker/gitea-runner/config.yaml"
-    sed_replace < "$src_dir/docker/icecast/icecast.xml.template" > "$src_dir/docker/icecast/icecast.xml"
     sed_replace < "$src_dir/docker/qbittorrent/qBittorrent.conf.template" > "$src_dir/docker/qbittorrent/qBittorrent.conf"
+
+    # Icecast config (conditional)
+    if [ "$ENABLE_ICECAST" = "y" ]; then
+        echo "   Writing Icecast config..."
+        sed_replace < "$src_dir/docker/icecast/icecast.xml.template" > "$src_dir/docker/icecast/icecast.xml"
+    fi
 
     # Host configs
     echo "   Writing host configs..."
     sed_replace < "$src_dir/host/wireguard/templates/wg0.conf.template" > "$src_dir/host/wireguard/wg0.conf"
-    sed_replace < "$src_dir/host/crowdsec/config/crowdsec.yaml.template" > "$src_dir/host/crowdsec/config/crowdsec.yaml"
-    sed_replace < "$src_dir/host/crowdsec/config/acquis.yaml.template" > "$src_dir/host/crowdsec/config/acquis.yaml"
+
+    # CrowdSec configs (conditional)
+    if [ "$ENABLE_CROWDSEC" = "y" ]; then
+        echo "   Writing CrowdSec configs..."
+        sed_replace < "$src_dir/host/crowdsec/config/crowdsec.yaml.template" > "$src_dir/host/crowdsec/config/crowdsec.yaml"
+        sed_replace < "$src_dir/host/crowdsec/config/acquis.yaml.template" > "$src_dir/host/crowdsec/config/acquis.yaml"
+    fi
 
     # Export generated values for later use
     export WG_PRIVATE_KEY WG_PUBLIC_KEY WG_PRESHARED_KEY MATRIX_SECRET_KEY NTFY_TOKEN

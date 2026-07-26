@@ -69,20 +69,18 @@ collect_inputs() {
     prompt_input "Admin username" "admin" ADMIN_USER
     prompt_input "Admin password" "" ADMIN_PASS true
 
-    # ── Matrix Synapse ──
-    echo ""
-    echo "── Matrix Synapse ──"
-    prompt_input "Server name (leave blank for domain)" "$DOMAIN" MATRIX_SERVER_NAME
-
-    # ── WireGuard ──
-    echo ""
-    echo "── WireGuard ──"
-    prompt_input "Your WireGuard public key" "" WG_PEER_PUBKEY
+    # Matrix server name is always the domain
+    MATRIX_SERVER_NAME="$DOMAIN"
 
     # ── Icecast ──
     echo ""
     echo "── Icecast ──"
-    prompt_input "Source password (for streaming clients)" "" ICECAST_SOURCE_PASS
+    prompt_yes_no "Enable Icecast radio streaming?" "y" ENABLE_ICECAST
+    if [ "$ENABLE_ICECAST" = "y" ]; then
+        prompt_input "Source password (for streaming clients)" "" ICECAST_SOURCE_PASS
+    else
+        ICECAST_SOURCE_PASS=""
+    fi
 
     # ── qBittorrent ──
     echo ""
@@ -109,9 +107,15 @@ collect_inputs() {
     # ── CrowdSec ──
     echo ""
     echo "── CrowdSec ──"
-    echo "   Sign up at: https://app.crowdsec.net/"
-    prompt_input "CrowdSec Customer ID" "" CROWDSEC_CUSTOMER_ID
-    prompt_input "CrowdSec API Key" "" CROWDSEC_API_KEY
+    prompt_yes_no "Enable CrowdSec intrusion prevention?" "y" ENABLE_CROWDSEC
+    if [ "$ENABLE_CROWDSEC" = "y" ]; then
+        echo "   Sign up at: https://app.crowdsec.net/"
+        prompt_input "CrowdSec Customer ID" "" CROWDSEC_CUSTOMER_ID
+        prompt_input "CrowdSec API Key" "" CROWDSEC_API_KEY
+    else
+        CROWDSEC_CUSTOMER_ID=""
+        CROWDSEC_API_KEY=""
+    fi
 
     echo ""
     echo "═══════════════════════════════════"

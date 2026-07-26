@@ -47,9 +47,15 @@ echo "── UFW ──"
 bash "$SRC_DIR/host/ufw/install.sh"
 bash "$SRC_DIR/host/ufw/rules.sh"
 
-echo ""
-echo "── CrowdSec ──"
-bash "$SRC_DIR/host/crowdsec/install.sh"
+if [ "$ENABLE_CROWDSEC" = "y" ]; then
+    echo ""
+    echo "── CrowdSec ──"
+    bash "$SRC_DIR/host/crowdsec/install.sh"
+else
+    echo ""
+    echo "── CrowdSec ──"
+    echo "   ⏭️  Skipped"
+fi
 
 echo ""
 echo "── WireGuard ──"
@@ -73,8 +79,11 @@ mkdir -p "$SRC_DIR/docker/gitea/data"
 mkdir -p "$SRC_DIR/docker/ntfy/data"
 mkdir -p "$SRC_DIR/docker/qbittorrent/config"
 mkdir -p "$SRC_DIR/docker/qbittorrent/data"
-mkdir -p "$SRC_DIR/docker/icecast/data"
 mkdir -p "$QBIT_SAVE_PATH"
+
+if [ "$ENABLE_ICECAST" = "y" ]; then
+    mkdir -p "$SRC_DIR/docker/icecast/data"
+fi
 
 # Install Docker if not present
 if ! command -v docker > /dev/null 2>&1; then
@@ -95,10 +104,15 @@ fi
 # Pull and start containers
 echo "   Pulling Docker images..."
 cd "$SRC_DIR/docker"
-docker compose pull
+
+# Build Docker Compose command with profiles
+DOCKER_PROFILES=""
+if [ "$ENABLE_ICECAST" = "y" ]; then
+    DOCKER_PROFILES="--profile icecast"
+fi
 
 echo "   Starting containers..."
-docker compose up -d
+docker compose $DOCKER_PROFILES up -d
 
 # ── Summary ──
 echo ""
@@ -112,7 +126,9 @@ echo "  Matrix:     https://matrix.$DOMAIN"
 echo "  NextCloud:  https://cloud.$DOMAIN"
 echo "  Gitea:      https://git.$DOMAIN"
 echo "  qBit:       https://torrent.$DOMAIN"
-echo "  Icecast:    https://radio.$DOMAIN"
+if [ "$ENABLE_ICECAST" = "y" ]; then
+    echo "  Icecast:    https://radio.$DOMAIN"
+fi
 echo "  NTFY:       https://ntfy.$DOMAIN"
 echo "  Proxy:      https://proxy.$DOMAIN"
 echo ""
@@ -125,5 +141,7 @@ echo ""
 echo "  Next steps:"
 echo "  1. Point your DNS subdomains to this VPS IP"
 echo "  2. Add your WireGuard peer to the tunnel"
-echo "  3. See CrowdSec_Guide.md for CrowdSec setup"
+if [ "$ENABLE_CROWDSEC" = "y" ]; then
+    echo "  3. See CrowdSec_Guide.md for CrowdSec setup"
+fi
 echo ""

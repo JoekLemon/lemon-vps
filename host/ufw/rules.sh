@@ -22,9 +22,11 @@ ufw allow 443/tcp comment "HTTPS"
 echo "   Allowing Matrix federation..."
 ufw allow 8448/tcp comment "Matrix Federation"
 
-# Icecast streaming
-echo "   Allowing Icecast..."
-ufw allow 8000/tcp comment "Icecast"
+# Icecast streaming (conditional)
+if [ "$ENABLE_ICECAST" = "y" ]; then
+    echo "   Allowing Icecast..."
+    ufw allow 8000/tcp comment "Icecast"
+fi
 
 # Reload to apply rules
 echo "   Reloading UFW..."

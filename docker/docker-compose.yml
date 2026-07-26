@@ -23,8 +23,6 @@ services:
         condition: service_healthy
       gitea:
         condition: service_healthy
-      icecast:
-        condition: service_healthy
       ntfy:
         condition: service_healthy
       qbittorrent:
@@ -94,6 +92,8 @@ services:
   icecast:
     image: icecast:${ICECAST_VERSION:-latest}
     restart: unless-stopped
+    profiles:
+      - icecast
     ports:
       - "8000:8000"
     volumes:
