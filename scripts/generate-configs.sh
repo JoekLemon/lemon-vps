@@ -63,7 +63,6 @@ generate_configs() {
     sed_replace < "$src_dir/docker/caddy/Caddyfile.template" > "$src_dir/docker/caddy/Caddyfile"
     sed_replace < "$src_dir/docker/synapse/homeserver.yaml.template" > "$src_dir/docker/synapse/homeserver.yaml"
     sed_replace < "$src_dir/docker/gitea/app.ini.template" > "$src_dir/docker/gitea/app.ini"
-    sed_replace < "$src_dir/docker/gitea-runner/config.template" > "$src_dir/docker/gitea-runner/config.yaml"
     sed_replace < "$src_dir/docker/qbittorrent/qBittorrent.conf.template" > "$src_dir/docker/qbittorrent/qBittorrent.conf"
 
     # NTFY config

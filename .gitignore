@@ -3,7 +3,6 @@ docker/.env
 docker/caddy/Caddyfile
 docker/synapse/homeserver.yaml
 docker/gitea/app.ini
-docker/gitea-runner/config.yaml
 docker/icecast/icecast.xml
 docker/qbittorrent/qBittorrent.conf
 docker/ntfy/config/server.yml

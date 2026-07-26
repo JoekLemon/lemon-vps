@@ -137,6 +137,27 @@ echo "   Setting up NTFY authentication..."
 sleep 3
 docker exec ntfy ntfy user add --role admin "$ADMIN_USER" <<< "$ADMIN_PASS" > /dev/null 2>&1 || echo "   ⚠️  NTFY user creation may need manual setup"
 
+# ── Register Gitea runner ──
+echo "   Registering Gitea runner..."
+sleep 5
+RUNNER_TOKEN=$(curl --fail --silent --show-error \
+    -X POST "http://localhost:3000/api/v1/user/runners/registration-token" \
+    -H "Authorization: Basic $(echo -n "${ADMIN_USER}:${ADMIN_PASS}" | base64)" \
+    -H "Content-Type: application/json" 2>/dev/null | grep -o '"token":"[^"]*"' | cut -d'"' -f4) || true
+
+if [ -n "$RUNNER_TOKEN" ]; then
+    docker exec gitea-runner act_runner register \
+        --no-interactive \
+        --instance "http://gitea:3000" \
+        --token "$RUNNER_TOKEN" \
+        --name "lemon-vps-runner" \
+        --labels "ubuntu-latest:docker://node:20-bullseye,ubuntu-22.04:docker://node:20-bullseye" \
+        > /dev/null 2>&1 || echo "   ⚠️  Runner registration may need manual setup"
+    docker restart gitea-runner > /dev/null 2>&1 || true
+else
+    echo "   ⚠️  Could not register runner — do it manually from Gitea UI"
+fi
+
 # ── Summary ──
 echo ""
 echo "═══════════════════════════════════"
