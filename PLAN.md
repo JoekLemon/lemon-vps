@@ -77,10 +77,7 @@ lemon-vps/
 │   │   ├── install.sh
 │   │   └── rules.sh
 │   ├── crowdsec/
-│   │   ├── install.sh
-│   │   └── config/
-│   │       ├── crowdsec.yaml
-│   │       └── acquis.yaml
+│   │   └── install.sh
 │   ├── wireguard/
 │   │   └── install.sh
 │   └── clamav/

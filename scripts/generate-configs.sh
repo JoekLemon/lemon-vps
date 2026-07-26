@@ -100,13 +100,6 @@ PresharedKey = $WG_PRESHARED_KEY
 AllowedIPs = 10.0.0.2/32
 EOF
 
-    # CrowdSec configs (conditional)
-    if [ "$ENABLE_CROWDSEC" = "y" ]; then
-        echo "   Writing CrowdSec configs..."
-        sed_fill "$src_dir/host/crowdsec/config/crowdsec.yaml"
-        sed_fill "$src_dir/host/crowdsec/config/acquis.yaml"
-    fi
-
     # Export generated values for later use
     export WG_PRIVATE_KEY WG_PUBLIC_KEY WG_PRESHARED_KEY WG_CLIENT_PRIVATE_KEY MATRIX_SECRET_KEY NTFY_TOKEN
 
