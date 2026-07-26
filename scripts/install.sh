@@ -121,6 +121,7 @@ fi
 
 if [ "$ENABLE_CANARYTG" = "y" ]; then
     mkdir --parents "$SRC_DIR/docker/canarytokens/redis-data"
+    mkdir --parents "$SRC_DIR/docker/canarytokens/uploads"
 fi
 
 # Install Docker if not present

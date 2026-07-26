@@ -162,10 +162,13 @@ services:
   canary-frontend:
     image: thinkst/canarytokens:${CANARYTG_VERSION:-latest}
     restart: unless-stopped
+    command: bash -c "cd frontend; uv run --no-sync python -m uvicorn app:app --host 0.0.0.0 --port 8082"
     profiles:
       - canarytokens
-    env_file:
-      - ./canarytokens/frontend.env
+    volumes:
+      - ./canarytokens/frontend.env:/srv/frontend/frontend.env:ro
+      - ./canarytokens/switchboard.env:/srv/switchboard/switchboard.env:ro
+      - ./canarytokens/uploads:/uploads/
     depends_on:
       canary-redis:
         condition: service_healthy
@@ -173,7 +176,7 @@ services:
   canary-switchboard:
     image: thinkst/canarytokens:${CANARYTG_VERSION:-latest}
     restart: unless-stopped
-    command: switchboard
+    command: bash -c "cd switchboard; rm -f switchboard.pid; uv run --no-sync twistd -noy switchboard.tac --pidfile=switchboard.pid"
     profiles:
       - canarytokens
     ports:
@@ -182,8 +185,10 @@ services:
       - "5354:5354/udp"
       - "2500:2500/tcp"
       - "3306:3306/tcp"
-    env_file:
-      - ./canarytokens/switchboard.env
+    volumes:
+      - ./canarytokens/frontend.env:/srv/frontend/frontend.env:ro
+      - ./canarytokens/switchboard.env:/srv/switchboard/switchboard.env:ro
+      - ./canarytokens/uploads:/uploads/
     depends_on:
       canary-redis:
         condition: service_healthy
