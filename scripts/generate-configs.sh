@@ -98,6 +98,12 @@ PresharedKey = $WG_PRESHARED_KEY
 AllowedIPs = 10.0.0.2/32
 EOF
 
+    # Fix ownership for files that containers write to
+    echo "   Fixing file ownership..."
+    # Gitea drops to UID 1000 (git user) and writes JWT_SECRET to app.ini
+    chown 1000:1000 "$src_dir/docker/gitea/app.ini"
+    chown 1000:1000 "$src_dir/docker/gitea/data/gitea/conf/" 2>/dev/null || true
+
     # Export generated values for later use
     export WG_PRIVATE_KEY WG_PUBLIC_KEY WG_PRESHARED_KEY WG_CLIENT_PRIVATE_KEY MATRIX_SECRET_KEY NTFY_TOKEN
 

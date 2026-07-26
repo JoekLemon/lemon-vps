@@ -137,6 +137,18 @@ echo "   Setting up NTFY authentication..."
 sleep 3
 docker exec ntfy ntfy user add --role admin "$ADMIN_USER" <<< "$ADMIN_PASS" > /dev/null 2>&1 || echo "   ⚠️  NTFY user creation may need manual setup"
 
+# ── Install NextCloud if not auto-installed ──
+echo "   Checking NextCloud installation..."
+sleep 5
+if ! docker exec nextcloud php occ status 2>/dev/null | grep -q 'installed: true'; then
+    echo "   Installing NextCloud..."
+    docker exec nextcloud php occ maintenance:install \
+        --admin-user="$ADMIN_USER" \
+        --admin-pass="$ADMIN_PASS" \
+        --database=sqlite > /dev/null 2>&1 || echo "   ⚠️  NextCloud install may need manual setup"
+    docker exec nextcloud php occ config:system:set trusted_domains 1 --value="https://cloud.$DOMAIN" > /dev/null 2>&1 || true
+fi
+
 # ── Register Gitea runner ──
 echo "   Registering Gitea runner..."
 sleep 5
