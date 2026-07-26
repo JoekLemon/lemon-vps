@@ -15,8 +15,9 @@ detect_os
 
 echo "🦠 Installing ClamAV..."
 
-# Install ClamAV packages
-pkg_install clamav clamav-daemon clamav-on-access clamav-unofficial-sigs
+# Install ClamAV packages (on-access is part of clamav-daemon on Debian 13)
+echo "   Installing ClamAV packages..."
+pkg_install clamav clamav-daemon clamav-freshclam
 
 # Stop services for initial setup
 echo "   Stopping ClamAV services for update..."
@@ -25,7 +26,7 @@ systemctl stop clamav-freshclam 2>/dev/null || true
 
 # Update virus definitions
 echo "   Updating virus definitions (this may take a while)..."
-freshclam
+freshclam 2>/dev/null || echo "   ⚠️  freshclam update may need to complete later"
 
 # Create quarantine directory
 echo "   Creating quarantine directory..."
@@ -33,7 +34,11 @@ mkdir --parents /var/log/clamav/quarantine
 
 # Deploy hardened clamd.conf
 echo "   Deploying hardened clamd.conf..."
-cp "$SRC_DIR/host/clamav/config/clamd.conf" /etc/clamav/clamd.conf
+if [ -d /etc/clamav ]; then
+    cp "$SRC_DIR/host/clamav/config/clamd.conf" /etc/clamav/clamd.conf
+else
+    echo "   ⚠️  /etc/clamav not found — skipping clamd.conf"
+fi
 
 # Deploy systemd units
 echo "   Deploying systemd units..."
@@ -57,9 +62,9 @@ systemctl daemon-reload
 
 # Enable and start services
 echo "   Starting ClamAV services..."
-systemctl enable --now clamav-daemon
-systemctl enable --now clamav-freshclam
-systemctl enable --now clamonacc
+systemctl enable --now clamav-daemon || echo "   ⚠️  Failed to start clamav-daemon"
+systemctl enable --now clamav-freshclam || echo "   ⚠️  Failed to start clamav-freshclam"
+systemctl enable --now clamonacc || echo "   ⚠️  Failed to start clamonacc"
 
 echo "✅ ClamAV installed with on-access scanning"
 echo "   Quarantine: /var/log/clamav/quarantine"

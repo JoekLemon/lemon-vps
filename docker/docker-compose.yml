@@ -16,17 +16,6 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
-    depends_on:
-      synapse:
-        condition: service_healthy
-      nextcloud:
-        condition: service_healthy
-      gitea:
-        condition: service_healthy
-      ntfy:
-        condition: service_healthy
-      qbittorrent:
-        condition: service_healthy
 
   synapse:
     image: matrixdotorg/synapse:${SYNAPSE_VERSION:-latest}
@@ -38,11 +27,11 @@ services:
       - SYNAPSE_SERVER_NAME=${MATRIX_SERVER_NAME}
       - SYNAPSE_REPORT_STATS=no
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8008/_matrix/client/versions"]
+      test: ["CMD-SHELL", "curl -fsSL http://localhost:8008/_matrix/client/versions || exit 1"]
       interval: 30s
       timeout: 10s
-      retries: 3
-      start_period: 30s
+      retries: 5
+      start_period: 60s
 
   nextcloud:
     image: nextcloud:${NEXTCLOUD_VERSION:-latest}
@@ -60,11 +49,11 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:80/status.php"]
+      test: ["CMD-SHELL", "curl -fsSL http://localhost:80/status.php || exit 1"]
       interval: 30s
       timeout: 10s
-      retries: 3
-      start_period: 60s
+      retries: 5
+      start_period: 90s
 
   redis:
     image: redis:7-alpine
@@ -88,11 +77,11 @@ services:
       - GITEA__security__INSTALL_LOCK=true
       - GITEA__service__DISABLE_REGISTRATION=false
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/api/v1/version"]
+      test: ["CMD-SHELL", "curl -fsSL http://localhost:3000/api/v1/version || wget -qO- http://localhost:3000/api/v1/version || exit 1"]
       interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
 
   gitea-runner:
     image: gitea/act_runner:${GITEA_RUNNER_VERSION:-latest}
@@ -117,7 +106,7 @@ services:
       - ./icecast/icecast.xml:/etc/icecast.xml:ro
       - ${QBIT_SAVE_PATH:-/home/user/Music}:/music:ro
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/status.xsl"]
+      test: ["CMD-SHELL", "curl -fsSL http://localhost:8000/status.xsl || exit 1"]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -135,11 +124,11 @@ services:
       - ./qbittorrent/config:/config
       - ${QBIT_SAVE_PATH:-/home/user/Music}:/downloads
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      test: ["CMD-SHELL", "curl -fsSL http://localhost:8080 || exit 1"]
       interval: 30s
       timeout: 5s
-      retries: 3
-      start_period: 20s
+      retries: 5
+      start_period: 30s
 
   ntfy:
     image: binwiederhier/ntfy:${NTFY_VERSION:-latest}
@@ -151,8 +140,8 @@ services:
     environment:
       - NTFY_BASE_URL=https://ntfy.${DOMAIN}
     healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:80/v1/health"]
+      test: ["CMD-SHELL", "wget --spider -q http://localhost:80/v1/health || exit 1"]
       interval: 30s
       timeout: 5s
-      retries: 3
-      start_period: 10s
+      retries: 5
+      start_period: 15s

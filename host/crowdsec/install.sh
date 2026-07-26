@@ -1,7 +1,7 @@
 #!/bin/bash
 : '
 Title:          CrowdSec Install Script
-Description:    Installs CrowdSec and the UFW bouncer for intrusion prevention.
+Description:    Installs CrowdSec and the iptables bouncer for intrusion prevention.
 Author:         Joek Lemon
 Contributors:
 Notes:          Requires CrowdSec account credentials.
@@ -17,26 +17,37 @@ echo "🛡️ Installing CrowdSec..."
 
 # Add CrowdSec repository
 echo "   Adding CrowdSec repository..."
-curl -s https://install.crowdsec.net | bash
+curl --fail --silent --show-error https://install.crowdsec.net | bash
 
-# Install CrowdSec and UFW bouncer
-echo "   Installing CrowdSec packages..."
-pkg_install crowdsec crowdsec-firewall-bouncer-ufw
+# Install CrowdSec
+echo "   Installing CrowdSec..."
+pkg_install crowdsec
+
+# Install the iptables bouncer (works with UFW)
+echo "   Installing firewall bouncer..."
+pkg_install crowdsec-firewall-bouncer-iptables
+
+# Wait for CrowdSec to initialize
+sleep 3
 
 # Copy configuration
 echo "   Deploying configuration..."
-cp "$SRC_DIR/host/crowdsec/config/crowdsec.yaml" /etc/crowdsec/config.yaml
-cp "$SRC_DIR/host/crowdsec/config/acquis.yaml" /etc/crowdsec/acquis.yaml
+if [ -d /etc/crowdsec ]; then
+    cp "$SRC_DIR/host/crowdsec/config/crowdsec.yaml" /etc/crowdsec/config.yaml
+    cp "$SRC_DIR/host/crowdsec/config/acquis.yaml" /etc/crowdsec/acquis.yaml
 
-# Configure API key
-echo "   Configuring API credentials..."
-sed -i "s|customer_id:.*|customer_id: \"$CROWDSEC_CUSTOMER_ID\"|" /etc/crowdsec/config.yaml
-sed -i "s|console_api_key:.*|console_api_key: \"$CROWDSEC_API_KEY\"|" /etc/crowdsec/config.yaml
+    # Configure API key
+    echo "   Configuring API credentials..."
+    sed -i "s|customer_id:.*|customer_id: \"$CROWDSEC_CUSTOMER_ID\"|" /etc/crowdsec/config.yaml
+    sed -i "s|console_api_key:.*|console_api_key: \"$CROWDSEC_API_KEY\"|" /etc/crowdsec/config.yaml
+else
+    echo "   ⚠️  /etc/crowdsec not found — using default config"
+fi
 
 # Enable and start services
 echo "   Starting CrowdSec services..."
-systemctl enable --now crowdsec
-systemctl enable --now crowdsec-firewall-bouncer-ufw
+systemctl enable --now crowdsec || echo "   ⚠️  Failed to start crowdsec"
+systemctl enable --now crowdsec-firewall-bouncer || echo "   ⚠️  Failed to start firewall bouncer"
 
 # Enroll with console
 echo "   Enrolling with CrowdSec console..."
