@@ -44,6 +44,7 @@ fi
 echo "   Deploying systemd units..."
 cp "$SRC_DIR/host/clamav/clamonacc.service" /etc/systemd/system/
 cp "$SRC_DIR/host/clamav/clamscan.service" /etc/systemd/system/
+cp "$SRC_DIR/host/clamav/clamscan.timer" /etc/systemd/system/
 cp "$SRC_DIR/host/clamav/clamav-logrotate.service" /etc/systemd/system/
 
 # Deploy logrotate configs
@@ -65,6 +66,7 @@ echo "   Starting ClamAV services..."
 systemctl enable --now clamav-daemon || echo "   ⚠️  Failed to start clamav-daemon"
 systemctl enable --now clamav-freshclam || echo "   ⚠️  Failed to start clamav-freshclam"
 systemctl enable --now clamonacc || echo "   ⚠️  Failed to start clamonacc"
+systemctl enable --now clamscan.timer || echo "   ⚠️  Failed to start clamscan.timer"
 
 echo "✅ ClamAV installed with on-access scanning"
 echo "   Quarantine: /var/log/clamav/quarantine"
