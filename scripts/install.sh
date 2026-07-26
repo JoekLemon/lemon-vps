@@ -7,7 +7,7 @@ Contributors:
 Notes:          Called by setup.sh after repo is cloned.
 '
 
-set --errexit
+set -o errexit
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SRC_DIR="$(dirname "$SCRIPT_DIR")"
@@ -35,6 +35,13 @@ collect_inputs
 
 # ── Generate configs ──
 generate_configs "$SRC_DIR"
+
+# ── Export variables for sub-scripts ──
+export SRC_DIR DOMAIN EMAIL ADMIN_USER ADMIN_PASS MATRIX_SERVER_NAME
+export ENABLE_ICECAST ICECAST_SOURCE_PASS QBIT_SAVE_PATH
+export ENABLE_CROWDSEC CROWDSEC_CUSTOMER_ID CROWDSEC_API_KEY
+export PROXY_AUTH PROXY_USER PROXY_PASS
+export NTFY_TOPIC NTFY_TOKEN
 
 # ── Install host services ──
 echo ""
@@ -110,6 +117,8 @@ DOCKER_PROFILES=""
 if [ "$ENABLE_ICECAST" = "y" ]; then
     DOCKER_PROFILES="--profile icecast"
 fi
+
+docker compose $DOCKER_PROFILES pull
 
 echo "   Starting containers..."
 docker compose $DOCKER_PROFILES up -d

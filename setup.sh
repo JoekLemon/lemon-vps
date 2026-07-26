@@ -7,7 +7,7 @@ Contributors:
 Notes:          Usage: bash <(curl -s https://raw.githubusercontent.com/JoekLemon/lemon-vps/main/setup.sh)
 '
 
-set --errexit
+set -o errexit
 
 REPO="https://github.com/JoekLemon/lemon-vps.git"
 CLONE_DIR="/tmp/lemon-vps"

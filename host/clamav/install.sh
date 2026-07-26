@@ -7,6 +7,11 @@ Contributors:
 Notes:          Includes clamonacc, clamscan, and logrotate services.
 '
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SRC_DIR="$(dirname "$(dirname "$SCRIPT_DIR")")"
+# shellcheck source=../../scripts/detect-os.sh
+source "$SRC_DIR/scripts/detect-os.sh"
+
 echo "🦠 Installing ClamAV..."
 
 # Install ClamAV packages

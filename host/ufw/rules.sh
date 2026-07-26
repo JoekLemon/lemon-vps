@@ -23,7 +23,7 @@ echo "   Allowing Matrix federation..."
 ufw allow 8448/tcp comment "Matrix Federation"
 
 # Icecast streaming (conditional)
-if [ "$ENABLE_ICECAST" = "y" ]; then
+if [[ "$ENABLE_ICECAST" = "y" ]]; then
     echo "   Allowing Icecast..."
     ufw allow 8000/tcp comment "Icecast"
 fi

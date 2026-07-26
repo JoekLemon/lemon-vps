@@ -7,7 +7,7 @@ Contributors:
 Notes:          Called by clamav-logrotate.service.
 '
 
-set --errexit
+set -o errexit
 
 LOGROTATE="/usr/sbin/logrotate"
 LOGROTATE_DIR="/etc/logrotate.d"

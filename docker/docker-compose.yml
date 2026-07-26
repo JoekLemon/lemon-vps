@@ -90,7 +90,7 @@ services:
         condition: service_healthy
 
   icecast:
-    image: icecast:${ICECAST_VERSION:-latest}
+    image: ghcr.io/jee-r/icecast:${ICECAST_VERSION:-latest}
     restart: unless-stopped
     profiles:
       - icecast
