@@ -150,14 +150,14 @@ if [ ! -f /etc/docker/daemon.json ] || ! grep -q '"dns"' /etc/docker/daemon.json
         python3 -c "
 import json
 with open('/etc/docker/daemon.json') as f: cfg = json.load(f)
-cfg['dns'] = ['8.8.8.8', '1.1.1.1']
+cfg['dns'] = ['9.9.9.9', '149.112.112.112']
 with open('/etc/docker/daemon.json', 'w') as f: json.dump(cfg, f, indent=2)
-" 2>/dev/null || echo '{"dns":["8.8.8.8","1.1.1.1"]}' > /etc/docker/daemon.json
+" 2>/dev/null || echo '{"dns":["9.9.9.9","149.112.112.112"]}' > /etc/docker/daemon.json
     else
-        echo '{"dns":["8.8.8.8","1.1.1.1"]}' > /etc/docker/daemon.json
+        echo '{"dns":["9.9.9.9","149.112.112.112"]}' > /etc/docker/daemon.json
     fi
     systemctl restart docker
-    echo "   Docker DNS set to 8.8.8.8, 1.1.1.1"
+    echo "   Docker DNS set to 9.9.9.9, 149.112.112.112"
 else
     echo "   Docker DNS already configured"
 fi
