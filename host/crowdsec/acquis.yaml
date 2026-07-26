@@ -1,0 +1,15 @@
+# CrowdSec Acquisition Configuration
+# lemon-vps — tells CrowdSec which logs to watch
+
+---
+# SSH (auth.log)
+filenames:
+  - /var/log/auth.log
+labels:
+  type: syslog
+---
+# Caddy access logs (JSON format)
+filenames:
+  - {{SRC_DIR}}/docker/caddy/data/access.log
+labels:
+  type: caddy

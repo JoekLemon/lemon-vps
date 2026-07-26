@@ -3,6 +3,10 @@
 
 {
     order forward_proxy first
+    log {
+        output file /data/access.log
+        format json
+    }
 }
 
 # Forward proxy (HTTPS)
