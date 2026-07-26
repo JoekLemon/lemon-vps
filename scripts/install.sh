@@ -30,6 +30,14 @@ fi
 # ── Detect OS ──
 detect_os
 
+# ── Update system ──
+echo ""
+echo "═══════════════════════════════════"
+echo "  Updating system"
+echo "═══════════════════════════════════"
+pkg_update
+pkg_upgrade
+
 # ── Collect user input ──
 collect_inputs
 

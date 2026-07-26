@@ -69,3 +69,18 @@ pkg_update() {
             ;;
     esac
 }
+
+pkg_upgrade() {
+    echo "   Upgrading packages..."
+    case "$PKG_MANAGER" in
+        apt)
+            apt upgrade --yes --quiet
+            ;;
+        dnf)
+            dnf upgrade --yes --quiet
+            ;;
+        yum)
+            yum update --yes --quiet
+            ;;
+    esac
+}
