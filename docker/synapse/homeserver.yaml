@@ -23,7 +23,7 @@ upload_size: 52428800
 url_preview_enabled: false
 
 enable_registration: true
-enable_registration_without_verification: false
+enable_registration_without_verification: true
 
 report_stats: false
 
