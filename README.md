@@ -19,6 +19,7 @@ bash <(curl -s https://raw.githubusercontent.com/JoekLemon/lemon-vps/main/setup.
 | **CrowdSec** | Intrusion prevention |
 | **WireGuard** | VPN |
 | **ClamAV** | Antivirus with on-access scanning |
+| **NextDNS** | DNS resolver for WireGuard clients (optional) |
 
 ### Docker Services
 
@@ -32,6 +33,20 @@ bash <(curl -s https://raw.githubusercontent.com/JoekLemon/lemon-vps/main/setup.
 | **qBittorrent** | `torrent.*` | Torrent client |
 | **Icecast** | `radio.*` | Audio streaming |
 | **NTFY.sh** | `ntfy.*` | Push notifications |
+| **Forward Proxy** | `proxy.*` | HTTP/HTTPS proxy |
+| **Canarytokens** | `canary.*` | Self-hosted honeytokens (optional) |
+
+## Guides
+
+Each service has a setup guide for post-install steps:
+
+| Guide | Location |
+|-------|----------|
+| [WireGuard](host/wireguard/Guide.md) | Add devices, split tunnel, troubleshooting |
+| [NextCloud](docker/nextcloud/Guide.md) | Desktop/mobile apps, cron, performance |
+| [Gitea & CI/CD](docker/gitea/Guide.md) | Workflows, runner management |
+| [CrowdSec](host/crowdsec/Guide.md) | Bouncer setup, testing bans |
+| [Canarytokens](docker/canarytokens/Guide.md) | Token creation, NTFY alerts |
 
 ## Supported OS
 
@@ -46,35 +61,10 @@ bash <(curl -s https://raw.githubusercontent.com/JoekLemon/lemon-vps/main/setup.
 - 8GB RAM / 4 vCPU recommended
 - Domain pointed at VPS IP
 
-## Services
-
-### Matrix Synapse
-Federated chat server at `matrix.yourdomain.com`.
-
-### NextCloud
-File storage and sync at `cloud.yourdomain.com`.
-
-### Gitea
-Self-hosted Git at `git.yourdomain.com`.
-
-### qBittorrent
-Web UI for torrenting at `torrent.yourdomain.com`.
-Downloads to `/home/$USER/Music`.
-
-### Icecast
-Audio streaming at `radio.yourdomain.com`.
-Streams from `/home/$USER/Music`.
-
-### NTFY.sh
-Push notifications at `ntfy.yourdomain.com`.
-
-### Forward Proxy
-HTTP/HTTPS proxy built into Caddy at `proxy.yourdomain.com`.
-
 ## Updating
 
 ```bash
-cd /path/to/lemon-vps
+cd /opt/lemon-vps
 bash scripts/update.sh
 ```
 
