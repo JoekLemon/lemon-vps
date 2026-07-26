@@ -38,10 +38,6 @@ ntfy.{{DOMAIN}} {
     reverse_proxy ntfy:80
 }
 
-proxy.{{DOMAIN}} {
-    reverse_proxy caddy:443
-}
-
 # Matrix federation
 {{DOMAIN}}:8448 {
     reverse_proxy synapse:8008
