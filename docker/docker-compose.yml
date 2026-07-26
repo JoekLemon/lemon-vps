@@ -69,7 +69,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./gitea/data:/data
-      - ./gitea/app.ini:/data/gitea/conf/app.ini:ro
+      - ./gitea/app.ini:/data/gitea/conf/app.ini
     environment:
       - GITEA__database__DB_TYPE=sqlite3
       - GITEA__server__ROOT_URL=https://git.${DOMAIN}
