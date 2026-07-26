@@ -34,6 +34,8 @@ generate_configs() {
     if [ "$ENABLE_CANARYTG" = "y" ]; then
         echo "   Generating Canarytokens WireGuard key seed..."
         CANARYTG_WG_KEY_SEED=$(dd bs=32 count=1 if=/dev/urandom 2>/dev/null | base64)
+        echo "   Detecting VPS public IP for Canarytokens..."
+        VPS_PUBLIC_IP=$(curl --fail --silent --show-error https://api.ipify.org || curl --fail --silent --show-error https://ifconfig.co)
     fi
 
     # sed in-place replacement
@@ -57,6 +59,7 @@ generate_configs() {
             -e "s|{{PROXY_USER}}|$PROXY_USER|g" \
             -e "s|{{PROXY_PASS}}|$PROXY_PASS|g" \
             -e "s|{{CANARYTG_WG_KEY_SEED}}|$CANARYTG_WG_KEY_SEED|g" \
+            -e "s|{{VPS_PUBLIC_IP}}|$VPS_PUBLIC_IP|g" \
             "$1"
     }
 
