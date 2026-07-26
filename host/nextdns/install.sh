@@ -28,36 +28,29 @@ ARCH=$(dpkg --print-architecture 2>/dev/null || echo "amd64")
 case "$ARCH" in
     amd64)  NEXTDNS_ARCH="amd64" ;;
     arm64)  NEXTDNS_ARCH="arm64" ;;
-    armhf)  NEXTDNS_ARCH="arm" ;;
+    armhf)  NEXTDNS_ARCH="armv7" ;;
     *)      echo "❌ Unsupported architecture: $ARCH"; exit 1 ;;
 esac
 
-# Download and install NextDNS binary
+# Download and install .deb package
 echo "   Downloading NextDNS..."
+NEXTDNS_DEB=$(mktemp /tmp/nextdns_XXXXXX.deb)
 curl --fail --silent --show-error --location \
-    "https://github.com/nextdns/nextdns/releases/latest/download/nextdns_${NEXTDNS_ARCH}" \
-    -o /usr/local/bin/nextdns
-chmod +x /usr/local/bin/nextdns
+    "https://github.com/nextdns/nextdns/releases/latest/download/nextdns_linux_${NEXTDNS_ARCH}.deb" \
+    -o "$NEXTDNS_DEB"
 
-# Create systemd service
-echo "   Creating systemd service..."
-cat > /etc/systemd/system/nextdns.service <<EOF
-[Unit]
-Description=NextDNS DNS Proxy
-After=network-online.target
-Wants=network-online.target
+echo "   Installing NextDNS..."
+dpkg --install "$NEXTDNS_DEB"
+rm -f "$NEXTDNS_DEB"
 
-[Service]
-Type=simple
-ExecStart=/usr/local/bin/nextdns run -config $NEXTDNS_PROFILE -listen 10.0.0.1:53 -report-client-info -cache-size 10MB
-Restart=always
-RestartSec=5
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-systemctl daemon-reload
+# Configure and activate
+echo "   Configuring NextDNS (profile: $NEXTDNS_PROFILE)..."
+nextdns install \
+    -config "$NEXTDNS_PROFILE" \
+    -listen 10.0.0.1:53 \
+    -report-client-info \
+    -cache-size 10MB \
+    -auto-activate
 
 # Enable and start
 echo "   Starting NextDNS..."
