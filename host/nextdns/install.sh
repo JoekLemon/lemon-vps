@@ -32,11 +32,17 @@ case "$ARCH" in
     *)      echo "❌ Unsupported architecture: $ARCH"; exit 1 ;;
 esac
 
-# Download and install .deb package
+# Get latest version from GitHub API and download .deb package
 echo "   Downloading NextDNS..."
+NEXTDNS_VERSION=$(curl --fail --silent --show-error "https://api.github.com/repos/nextdns/nextdns/releases/latest" | grep '"tag_name"' | cut -d'"' -f4)
+if [ -z "$NEXTDNS_VERSION" ]; then
+    echo "❌ Could not determine NextDNS version"
+    exit 1
+fi
+echo "   Version: $NEXTDNS_VERSION"
 NEXTDNS_DEB=$(mktemp /tmp/nextdns_XXXXXX.deb)
 curl --fail --silent --show-error --location \
-    "https://github.com/nextdns/nextdns/releases/latest/download/nextdns_linux_${NEXTDNS_ARCH}.deb" \
+    "https://github.com/nextdns/nextdns/releases/download/${NEXTDNS_VERSION}/nextdns_${NEXTDNS_VERSION#v}_linux_${NEXTDNS_ARCH}.deb" \
     -o "$NEXTDNS_DEB"
 
 echo "   Installing NextDNS..."
