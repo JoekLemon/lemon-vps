@@ -1,5 +1,5 @@
 [Unit]
-Description=Run clamscan.service every Saturday at 12:00
+Description=Run lemon-clamscan.service every Saturday at 12:00
 Documentation=man:systemd.timer(5)
 
 [Timer]
@@ -7,7 +7,7 @@ OnCalendar=Sat *-*-* 12:00:00
 Persistent=true
 AccuracySec=1m
 WakeSystem=true
-Unit=clamscan.service
+Unit=lemon-clamscan.service
 
 [Install]
 WantedBy=timers.target

@@ -13,7 +13,7 @@ RestartSec=120s
 LimitNOFILE=65536
 StandardOutput=journal
 StandardError=journal
-SyslogIdentifier=clamonacc
+SyslogIdentifier=lemon-clamonacc
 
 [Install]
 WantedBy=multi-user.target

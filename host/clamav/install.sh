@@ -42,10 +42,10 @@ fi
 
 # Deploy systemd units
 echo "   Deploying systemd units..."
-cp "$SRC_DIR/host/clamav/clamonacc.service" /etc/systemd/system/
-cp "$SRC_DIR/host/clamav/clamscan.service" /etc/systemd/system/
-cp "$SRC_DIR/host/clamav/clamscan.timer" /etc/systemd/system/
-cp "$SRC_DIR/host/clamav/clamav-logrotate.service" /etc/systemd/system/
+cp "$SRC_DIR/host/clamav/lemon-clamonacc.service" /etc/systemd/system/
+cp "$SRC_DIR/host/clamav/lemon-clamscan.service" /etc/systemd/system/
+cp "$SRC_DIR/host/clamav/lemon-clamscan.timer" /etc/systemd/system/
+cp "$SRC_DIR/host/clamav/lemon-clamav-logrotate.service" /etc/systemd/system/
 
 # Deploy logrotate configs
 echo "   Deploying logrotate configs..."
@@ -54,8 +54,8 @@ cp "$SRC_DIR/host/clamav/config/clamscan_logrotate.conf" /etc/logrotate.d/
 
 # Deploy logrotate script
 echo "   Deploying logrotate script..."
-cp "$SRC_DIR/host/clamav/scripts/logrotate.sh" /usr/local/bin/clamav-logrotate
-chmod +x /usr/local/bin/clamav-logrotate
+cp "$SRC_DIR/host/clamav/scripts/logrotate.sh" /usr/local/bin/lemon-clamav-logrotate
+chmod +x /usr/local/bin/lemon-clamav-logrotate
 
 # Reload systemd
 echo "   Reloading systemd..."
@@ -65,8 +65,8 @@ systemctl daemon-reload
 echo "   Starting ClamAV services..."
 systemctl enable --now clamav-daemon || echo "   ⚠️  Failed to start clamav-daemon"
 systemctl enable --now clamav-freshclam || echo "   ⚠️  Failed to start clamav-freshclam"
-systemctl enable --now clamonacc || echo "   ⚠️  Failed to start clamonacc"
-systemctl enable --now clamscan.timer || echo "   ⚠️  Failed to start clamscan.timer"
+systemctl enable --now lemon-clamonacc || echo "   ⚠️  Failed to start lemon-clamonacc"
+systemctl enable --now lemon-clamscan.timer || echo "   ⚠️  Failed to start lemon-clamscan.timer"
 
 echo "✅ ClamAV installed with on-access scanning"
 echo "   Quarantine: /var/log/clamav/quarantine"
