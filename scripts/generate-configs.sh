@@ -66,6 +66,10 @@ generate_configs() {
     sed_replace < "$src_dir/docker/gitea-runner/config.template" > "$src_dir/docker/gitea-runner/config.yaml"
     sed_replace < "$src_dir/docker/qbittorrent/qBittorrent.conf.template" > "$src_dir/docker/qbittorrent/qBittorrent.conf"
 
+    # NTFY config
+    echo "   Writing NTFY config..."
+    sed_replace < "$src_dir/docker/ntfy/config/server.yml.template" > "$src_dir/docker/ntfy/config/server.yml"
+
     # Icecast config (conditional)
     if [ "$ENABLE_ICECAST" = "y" ]; then
         echo "   Writing Icecast config..."

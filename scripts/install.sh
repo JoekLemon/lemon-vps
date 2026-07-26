@@ -132,6 +132,11 @@ docker compose $DOCKER_PROFILES pull
 echo "   Starting containers..."
 docker compose $DOCKER_PROFILES up -d
 
+# ── Create NTFY admin user ──
+echo "   Setting up NTFY authentication..."
+sleep 3
+docker exec ntfy ntfy user add --role admin "$ADMIN_USER" <<< "$ADMIN_PASS" > /dev/null 2>&1 || echo "   ⚠️  NTFY user creation may need manual setup"
+
 # ── Summary ──
 echo ""
 echo "═══════════════════════════════════"
