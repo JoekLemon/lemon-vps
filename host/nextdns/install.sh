@@ -8,6 +8,8 @@ Notes:          Listens only on the WireGuard interface (10.0.0.1:53).
                 DNS queries from WireGuard clients are resolved via NextDNS.
 '
 
+set -o errexit
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SRC_DIR="$(dirname "$(dirname "$SCRIPT_DIR")")"
 # shellcheck source=../../scripts/detect-os.sh
@@ -21,41 +23,48 @@ fi
 
 echo "🌐 Installing NextDNS..."
 
-# Add NextDNS repository
-echo "   Adding NextDNS repository..."
-if command -v apt > /dev/null 2>&1; then
-    install -d -m 0755 /etc/apt/keyrings
-    curl -fsSL https://nextdns.io/repo.key | gpg --dearmor -o /etc/apt/keyrings/nextdns.gpg
-    echo "deb [signed-by=/etc/apt/keyrings/nextdns.gpg] https://repo.nextdns.io/deb stable main" > /etc/apt/sources.list.d/nextdns.list
-    apt update --quiet
-    apt install --yes --quiet apt-transport-https
-    apt install --yes --quiet nextdns
-elif command -v dnf > /dev/null 2>&1; then
-    curl -fsSL https://repo.nextdns.io/nextdns.repo -o /etc/yum.repos.d/nextdns.repo
-    dnf install --yes nextdns
-elif command -v yum > /dev/null 2>&1; then
-    curl -fsSL https://repo.nextdns.io/nextdns.repo -o /etc/yum.repos.d/nextdns.repo
-    yum install --yes nextdns
-fi
+# Detect architecture
+ARCH=$(dpkg --print-architecture 2>/dev/null || echo "amd64")
+case "$ARCH" in
+    amd64)  NEXTDNS_ARCH="amd64" ;;
+    arm64)  NEXTDNS_ARCH="arm64" ;;
+    armhf)  NEXTDNS_ARCH="arm" ;;
+    *)      echo "❌ Unsupported architecture: $ARCH"; exit 1 ;;
+esac
 
-# Configure NextDNS
-#   -listen 10.0.0.1:53   Only listen on WireGuard interface
-#   -report-client-info   Show device names in dashboard
-#   -cache-size 10MB      Local DNS cache
-#   -auto-activate        Enable on install
-echo "   Configuring NextDNS (profile: $NEXTDNS_PROFILE)..."
-nextdns install \
-    -config "$NEXTDNS_PROFILE" \
-    -listen 10.0.0.1:53 \
-    -report-client-info \
-    -cache-size 10MB \
-    -auto-activate
+# Download and install NextDNS binary
+echo "   Downloading NextDNS..."
+curl --fail --silent --show-error --location \
+    "https://github.com/nextdns/nextdns/releases/latest/download/nextdns_${NEXTDNS_ARCH}" \
+    -o /usr/local/bin/nextdns
+chmod +x /usr/local/bin/nextdns
+
+# Create systemd service
+echo "   Creating systemd service..."
+cat > /etc/systemd/system/nextdns.service <<EOF
+[Unit]
+Description=NextDNS DNS Proxy
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/nextdns run -config $NEXTDNS_PROFILE -listen 10.0.0.1:53 -report-client-info -cache-size 10MB
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl daemon-reload
 
 # Enable and start
 echo "   Starting NextDNS..."
 systemctl enable --now nextdns
 
 # Verify it's listening
+sleep 2
 if ss -ulnp | grep -q "10.0.0.1:53"; then
     echo "✅ NextDNS installed and listening on 10.0.0.1:53"
 else
