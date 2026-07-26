@@ -41,6 +41,7 @@ echo "   Installing collections..."
 cscli collections install crowdsecurity/caddy || echo "   ⚠️  caddy collection already installed or unavailable"
 cscli collections install crowdsecurity/nextcloud || echo "   ⚠️  nextcloud collection already installed or unavailable"
 cscli collections install gilbsgilbs/qbittorrent || echo "   ⚠️  qbittorrent collection already installed or unavailable"
+cscli collections install LePresidente/gitea || echo "   ⚠️  gitea collection already installed or unavailable"
 
 # ── Step 7: Install scenarios ──
 echo "   Installing scenarios..."

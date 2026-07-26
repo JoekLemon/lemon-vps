@@ -13,3 +13,9 @@ filenames:
   - {{SRC_DIR}}/docker/caddy/data/access.log
 labels:
   type: caddy
+---
+# Gitea logs
+filenames:
+  - {{SRC_DIR}}/docker/gitea/data/gitea/log/gitea.log
+labels:
+  type: gitea
