@@ -11,9 +11,19 @@ set -o errexit
 
 REPO="https://github.com/JoekLemon/lemon-vps.git"
 CLONE_DIR="/tmp/lemon-vps"
+LOG_DIR="/var/log/lemon-vps"
+LOG_FILE="$LOG_DIR/install-$(date +%Y%m%d-%H%M%S).log"
+
+# Create log directory
+mkdir --parents "$LOG_DIR"
+
+# Start logging to file and terminal
+exec > >(tee --append "$LOG_FILE") 2>&1
 
 echo "🍋 lemon-vps installer"
 echo "======================"
+echo ""
+echo "📝 Log file: $LOG_FILE"
 echo ""
 
 # Ensure git is installed
@@ -47,4 +57,6 @@ rm --recursive --force "$CLONE_DIR"
 
 echo ""
 echo "✅ lemon-vps installed successfully!"
+echo ""
+echo "📝 Full log saved to: $LOG_FILE"
 echo ""
