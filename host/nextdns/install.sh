@@ -54,6 +54,7 @@ echo "   Configuring NextDNS (profile: $NEXTDNS_PROFILE)..."
 nextdns install \
     -config "$NEXTDNS_PROFILE" \
     -listen 10.0.0.1:53 \
+    -listen 127.0.0.1:53 \
     -report-client-info \
     -cache-size 10MB \
     -auto-activate
@@ -64,9 +65,9 @@ systemctl enable --now nextdns
 
 # Verify it's listening
 sleep 2
-if ss -ulnp | grep -q "10.0.0.1:53"; then
-    echo "✅ NextDNS installed and listening on 10.0.0.1:53"
+if ss -ulnp | grep -q "10.0.0.1:53" && ss -ulnp | grep -q "127.0.0.1:53"; then
+    echo "✅ NextDNS installed and listening on 10.0.0.1:53 and 127.0.0.1:53"
 else
-    echo "⚠️  NextDNS installed but may not be listening on 10.0.0.1:53"
+    echo "⚠️  NextDNS installed but may not be listening correctly"
     echo "   Check with: systemctl status nextdns"
 fi
