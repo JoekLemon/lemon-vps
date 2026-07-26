@@ -12,6 +12,7 @@ echo "🔥 Adding UFW rules..."
 # WireGuard VPN
 echo "   Allowing WireGuard..."
 ufw allow 51820/udp comment "WireGuard"
+ufw allow in on wg0 from 10.0.0.0/24 comment "WireGuard LAN"
 
 # HTTP/HTTPS for Caddy reverse proxy
 echo "   Allowing HTTP/HTTPS..."
