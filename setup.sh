@@ -10,7 +10,7 @@ Notes:          Usage: bash <(curl -s https://raw.githubusercontent.com/JoekLemo
 set -o errexit
 
 REPO="https://github.com/JoekLemon/lemon-vps.git"
-CLONE_DIR="/tmp/lemon-vps"
+INSTALL_DIR="/opt/lemon-vps"
 LOG_DIR="/var/log/lemon-vps"
 LOG_FILE="$LOG_DIR/install-$(date +%Y%m%d-%H%M%S).log"
 
@@ -41,22 +41,23 @@ if ! command -v git > /dev/null 2>&1; then
     fi
 fi
 
-# Clone repo
+# Clone or update repo
 echo "📥 Downloading lemon-vps..."
-rm --recursive --force "$CLONE_DIR"
-git clone --depth 1 "$REPO" "$CLONE_DIR"
+if [ -d "$INSTALL_DIR/.git" ]; then
+    echo "   Updating existing install..."
+    git -C "$INSTALL_DIR" pull --ff-only || true
+else
+    rm --recursive --force "$INSTALL_DIR"
+    git clone --depth 1 "$REPO" "$INSTALL_DIR"
+fi
 
 # Run installer
 echo ""
-bash "$CLONE_DIR/scripts/install.sh"
-
-# Cleanup
-echo ""
-echo "🧹 Cleaning up..."
-rm --recursive --force "$CLONE_DIR"
+bash "$INSTALL_DIR/scripts/install.sh"
 
 echo ""
 echo "✅ lemon-vps installed successfully!"
 echo ""
+echo "📁 Installed to: $INSTALL_DIR"
 echo "📝 Full log saved to: $LOG_FILE"
 echo ""

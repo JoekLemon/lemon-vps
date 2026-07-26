@@ -15,6 +15,10 @@ SRC_DIR="$(dirname "$SCRIPT_DIR")"
 echo "🔄 Updating lemon-vps..."
 echo ""
 
+# ── Pull latest code ──
+echo "── Git ──"
+git -C "$SRC_DIR" pull --ff-only || echo "   ⚠️  Git pull failed"
+
 # ── Update Docker containers ──
 echo "── Docker ──"
 cd "$SRC_DIR/docker"
