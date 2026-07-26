@@ -61,8 +61,6 @@ generate_configs() {
             -e "s|{{PROXY_AUTH}}|$PROXY_AUTH|g" \
             -e "s|{{PROXY_USER}}|$PROXY_USER|g" \
             -e "s|{{PROXY_PASS}}|$PROXY_PASS|g" \
-            -e "s|{{CROWDSEC_CUSTOMER_ID}}|$CROWDSEC_CUSTOMER_ID|g" \
-            -e "s|{{CROWDSEC_API_KEY}}|$CROWDSEC_API_KEY|g" \
             "$1"
     }
 

@@ -141,10 +141,9 @@ collect_inputs() {
     prompt_yes_no "Enable CrowdSec intrusion prevention?" "y" ENABLE_CROWDSEC
     if [[ "$ENABLE_CROWDSEC" = "y" ]]; then
         echo "   Sign up at: https://app.crowdsec.net/"
-        prompt_input "CrowdSec Customer ID" "" CROWDSEC_CUSTOMER_ID
+        echo "   Get your API key from: Settings → API Keys"
         prompt_input "CrowdSec API Key" "" CROWDSEC_API_KEY
     else
-        CROWDSEC_CUSTOMER_ID=""
         CROWDSEC_API_KEY=""
     fi
 
