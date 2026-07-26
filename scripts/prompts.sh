@@ -69,6 +69,32 @@ collect_inputs() {
     prompt_input "Admin username" "admin" ADMIN_USER
     prompt_input "Admin password" "" ADMIN_PASS true
 
+    # ── System User ──
+    echo ""
+    echo "── System User ──"
+    echo "   A non-root user for running services and storing data."
+    prompt_input "System username" "lemon" SYSTEM_USER
+
+    # Get or create the system user
+    if id "$SYSTEM_USER" > /dev/null 2>&1; then
+        echo "   User '$SYSTEM_USER' already exists"
+    else
+        echo "   Creating user '$SYSTEM_USER'..."
+        useradd --create-home --shell /bin/bash "$SYSTEM_USER"
+    fi
+
+    # Set variables based on system user
+    SYSTEM_USER_HOME="$(eval echo ~"$SYSTEM_USER")"
+    SYSTEM_USER_UID="$(id --user "$SYSTEM_USER")"
+    SYSTEM_USER_GID="$(id --group "$SYSTEM_USER")"
+
+    # Create Music directory
+    mkdir --parents "$SYSTEM_USER_HOME/Music"
+    chown "$SYSTEM_USER:$SYSTEM_USER" "$SYSTEM_USER_HOME/Music"
+
+    echo "   Home: $SYSTEM_USER_HOME"
+    echo "   UID:GID = $SYSTEM_USER_UID:$SYSTEM_USER_GID"
+
     # Matrix server name is always the domain
     MATRIX_SERVER_NAME="$DOMAIN"
 
@@ -85,7 +111,7 @@ collect_inputs() {
     # ── qBittorrent ──
     echo ""
     echo "── qBittorrent ──"
-    prompt_input "Download path" "/home/${SUDO_USER:-$USER}/Music" QBIT_SAVE_PATH
+    prompt_input "Download path" "$SYSTEM_USER_HOME/Music" QBIT_SAVE_PATH
 
     # ── NTFY.sh ──
     echo ""

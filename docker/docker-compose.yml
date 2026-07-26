@@ -110,8 +110,8 @@ services:
     image: lscr.io/linuxserver/qbittorrent:${QBITTORRENT_VERSION:-latest}
     restart: unless-stopped
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=${SYSTEM_USER_UID:-1000}
+      - PGID=${SYSTEM_USER_GID:-1000}
       - TZ=UTC
       - WEBUI_PORT=8080
     volumes:
