@@ -70,14 +70,17 @@ lemon-vps/
 │   ├── install.sh                    # Main orchestrator
 │   ├── detect-os.sh                  # OS detection, pkg helpers
 │   ├── prompts.sh                    # All user prompts
-│   ├── generate-configs.sh           # Template generation
+│   ├── generate-configs.sh           # In-place config editing
 │   └── update.sh                     # Update/restart containers
 ├── host/
 │   ├── ufw/
 │   │   ├── install.sh
 │   │   └── rules.sh
 │   ├── crowdsec/
-│   │   └── install.sh
+│   │   ├── install.sh
+│   │   └── config/
+│   │       ├── crowdsec.yaml
+│   │       └── acquis.yaml
 │   ├── wireguard/
 │   │   └── install.sh
 │   └── clamav/
@@ -85,26 +88,33 @@ lemon-vps/
 │       ├── clamonacc.service
 │       ├── clamscan.service
 │       ├── clamav-logrotate.service
+│       ├── scripts/
+│       │   └── logrotate.sh
 │       └── config/
-│           └── clamd.conf
+│           ├── clamd.conf
+│           ├── clamonacc_logrotate.conf
+│           └── clamscan_logrotate.conf
 ├── docker/
 │   ├── docker-compose.yml
-│   ├── .env.template
+│   ├── .env
 │   ├── caddy/
 │   │   ├── Dockerfile
-│   │   └── Caddyfile.template
+│   │   └── Caddyfile
 │   ├── synapse/
-│   │   └── homeserver.yaml.template
+│   │   └── homeserver.yaml
 │   ├── nextcloud/
-│   │   └── custom.config.php.template
+│   │   └── custom.config.php
 │   ├── gitea/
-│   │   └── app.ini.template
+│   │   └── app.ini
+│   ├── gitea-runner/
+│   │   └── config.yaml
 │   ├── qbittorrent/
-│   │   └── qBittorrent.conf.template
+│   │   └── qBittorrent.conf
 │   ├── icecast/
-│   │   └── icecast.xml.template
+│   │   └── icecast.xml
 │   ├── ntfy/
-│   │   └── server.yml.template
+│   │   └── config/
+│   │       └── server.yml
 │   └── proxy/
 │       └── (forwardproxy handled by Caddy)
 ```

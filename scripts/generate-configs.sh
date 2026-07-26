@@ -1,16 +1,16 @@
 #!/bin/bash
 : '
 Title:          Config Generator Script
-Description:    Generates all config files from templates by replacing placeholders.
+Description:    Replaces placeholders in config files with user values.
 Author:         Joek Lemon
 Contributors:
-Notes:          Uses {{PLACEHOLDER}} syntax in templates.
+Notes:          Uses {{PLACEHOLDER}} syntax, sed -i to edit in-place.
 '
 
 generate_configs() {
     local src_dir="$1"
 
-    echo "🔧 Generating configs from templates..."
+    echo "🔧 Configuring files..."
 
     # Install wireguard-tools for key generation
     echo "   Installing WireGuard tools..."
@@ -36,42 +36,46 @@ generate_configs() {
     echo "   Generating NTFY auth token..."
     NTFY_TOKEN=$(openssl rand -hex 32)
 
-    # Build sed replacement command
-    sed_replace() {
-        sed \
+    # sed in-place replacement
+    sed_fill() {
+        sed -i \
             -e "s|{{DOMAIN}}|$DOMAIN|g" \
             -e "s|{{EMAIL}}|$EMAIL|g" \
             -e "s|{{ADMIN_USER}}|$ADMIN_USER|g" \
             -e "s|{{ADMIN_PASS}}|$ADMIN_PASS|g" \
+            -e "s|{{SYSTEM_USER}}|$SYSTEM_USER|g" \
+            -e "s|{{SYSTEM_USER_HOME}}|$SYSTEM_USER_HOME|g" \
+            -e "s|{{SYSTEM_USER_UID}}|$SYSTEM_USER_UID|g" \
+            -e "s|{{SYSTEM_USER_GID}}|$SYSTEM_USER_GID|g" \
             -e "s|{{MATRIX_SERVER_NAME}}|$MATRIX_SERVER_NAME|g" \
             -e "s|{{MATRIX_SECRET_KEY}}|$MATRIX_SECRET_KEY|g" \
             -e "s|{{WG_PRIVATE_KEY}}|$WG_PRIVATE_KEY|g" \
             -e "s|{{WG_PUBLIC_KEY}}|$WG_PUBLIC_KEY|g" \
             -e "s|{{WG_PRESHARED_KEY}}|$WG_PRESHARED_KEY|g" \
+            -e "s|{{ICECAST_SOURCE_PASS}}|$ICECAST_SOURCE_PASS|g" \
             -e "s|{{QBIT_SAVE_PATH}}|$QBIT_SAVE_PATH|g" \
             -e "s|{{NTFY_TOPIC}}|$NTFY_TOPIC|g" \
             -e "s|{{NTFY_TOKEN}}|$NTFY_TOKEN|g" \
             -e "s|{{PROXY_AUTH}}|$PROXY_AUTH|g" \
             -e "s|{{PROXY_USER}}|$PROXY_USER|g" \
-            -e "s|{{PROXY_PASS}}|$PROXY_PASS|g"
+            -e "s|{{PROXY_PASS}}|$PROXY_PASS|g" \
+            -e "s|{{CROWDSEC_CUSTOMER_ID}}|$CROWDSEC_CUSTOMER_ID|g" \
+            -e "s|{{CROWDSEC_API_KEY}}|$CROWDSEC_API_KEY|g"
     }
 
     # Docker configs
     echo "   Writing docker configs..."
-    sed_replace < "$src_dir/docker/.env.template" > "$src_dir/docker/.env"
-    sed_replace < "$src_dir/docker/caddy/Caddyfile.template" > "$src_dir/docker/caddy/Caddyfile"
-    sed_replace < "$src_dir/docker/synapse/homeserver.yaml.template" > "$src_dir/docker/synapse/homeserver.yaml"
-    sed_replace < "$src_dir/docker/gitea/app.ini.template" > "$src_dir/docker/gitea/app.ini"
-    sed_replace < "$src_dir/docker/qbittorrent/qBittorrent.conf.template" > "$src_dir/docker/qbittorrent/qBittorrent.conf"
-
-    # NTFY config
-    echo "   Writing NTFY config..."
-    sed_replace < "$src_dir/docker/ntfy/config/server.yml.template" > "$src_dir/docker/ntfy/config/server.yml"
+    sed_fill "$src_dir/docker/.env"
+    sed_fill "$src_dir/docker/caddy/Caddyfile"
+    sed_fill "$src_dir/docker/synapse/homeserver.yaml"
+    sed_fill "$src_dir/docker/gitea/app.ini"
+    sed_fill "$src_dir/docker/qbittorrent/qBittorrent.conf"
+    sed_fill "$src_dir/docker/ntfy/config/server.yml"
 
     # Icecast config (conditional)
     if [ "$ENABLE_ICECAST" = "y" ]; then
         echo "   Writing Icecast config..."
-        sed_replace < "$src_dir/docker/icecast/icecast.xml.template" > "$src_dir/docker/icecast/icecast.xml"
+        sed_fill "$src_dir/docker/icecast/icecast.xml"
     fi
 
     # Host configs
@@ -96,8 +100,8 @@ EOF
     # CrowdSec configs (conditional)
     if [ "$ENABLE_CROWDSEC" = "y" ]; then
         echo "   Writing CrowdSec configs..."
-        sed_replace < "$src_dir/host/crowdsec/config/crowdsec.yaml.template" > "$src_dir/host/crowdsec/config/crowdsec.yaml"
-        sed_replace < "$src_dir/host/crowdsec/config/acquis.yaml.template" > "$src_dir/host/crowdsec/config/acquis.yaml"
+        sed_fill "$src_dir/host/crowdsec/config/crowdsec.yaml"
+        sed_fill "$src_dir/host/crowdsec/config/acquis.yaml"
     fi
 
     # Export generated values for later use
