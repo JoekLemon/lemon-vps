@@ -51,6 +51,7 @@ export ENABLE_ICECAST ICECAST_SOURCE_PASS QBIT_SAVE_PATH
 export ENABLE_CROWDSEC CROWDSEC_API_KEY
 export PROXY_AUTH PROXY_USER PROXY_PASS
 export NTFY_TOPIC NTFY_TOKEN
+export NEXTDNS_PROFILE
 
 # ── Install host services ──
 echo ""
@@ -80,6 +81,22 @@ bash "$SRC_DIR/host/wireguard/install.sh"
 echo ""
 echo "── ClamAV ──"
 bash "$SRC_DIR/host/clamav/install.sh"
+
+if [ -n "$NEXTDNS_PROFILE" ]; then
+    echo ""
+    echo "── NextDNS ──"
+    export NEXTDNS_PROFILE
+    bash "$SRC_DIR/host/nextdns/install.sh"
+else
+    echo ""
+    echo "── NextDNS ──"
+    echo "   ⏭️  Skipped (no profile ID)"
+fi
+
+# ── Create first WireGuard peer ──
+echo ""
+echo "── WireGuard Peer ──"
+bash "$SRC_DIR/host/wireguard/add-peer.sh" laptop || echo "   ⚠️  Could not create WireGuard peer"
 
 # ── Deploy Docker services ──
 echo ""
@@ -187,16 +204,27 @@ if [ "$ENABLE_ICECAST" = "y" ]; then
 fi
 echo "  NTFY:       https://ntfy.$DOMAIN"
 echo "  Proxy:      https://proxy.$DOMAIN"
+if [ -n "$NEXTDNS_PROFILE" ]; then
+    echo "  DNS:        NextDNS (profile: $NEXTDNS_PROFILE)"
+fi
+echo ""
+echo "  WireGuard:"
+echo "  ─────────────────────────────────"
+echo "  Client config: /opt/lemon-vps/host/wireguard/clients/laptop.conf"
+echo ""
+echo "  Download the config:"
+echo "  scp root@<VPS_IP>:/opt/lemon-vps/host/wireguard/clients/laptop.conf ."
+echo "  Then import it into your WireGuard client app."
 echo ""
 echo "  Generated values (SAVE THESE):"
 echo "  ─────────────────────────────────"
-echo "  WireGuard client private key: $WG_CLIENT_PRIVATE_KEY"
-echo "  NTFY auth token:              $NTFY_TOKEN"
+echo "  NTFY auth token: $NTFY_TOKEN"
 echo ""
 echo "  Next steps:"
 echo "  1. Point your DNS subdomains to this VPS IP"
-echo "  2. Add your WireGuard peer to the tunnel"
+echo "  2. Download the WireGuard client config via scp"
+echo "  3. Add more devices: sudo bash /opt/lemon-vps/host/wireguard/add-peer.sh <name>"
 if [ "$ENABLE_CROWDSEC" = "y" ]; then
-    echo "  3. See CrowdSec_Guide.md for CrowdSec setup"
+    echo "  4. See CrowdSec_Guide.md for CrowdSec setup"
 fi
 echo ""

@@ -147,6 +147,13 @@ collect_inputs() {
         CROWDSEC_API_KEY=""
     fi
 
+    # ── NextDNS ──
+    echo ""
+    echo "── NextDNS ──"
+    echo "   DNS resolver for WireGuard clients (ad-blocking, tracking protection)."
+    echo "   Get your profile ID at: https://my.nextdns.io"
+    prompt_input "NextDNS profile ID (leave empty to skip)" "" NEXTDNS_PROFILE
+
     echo ""
     echo "═══════════════════════════════════"
     echo "  Configuration complete"
