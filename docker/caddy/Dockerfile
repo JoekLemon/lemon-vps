@@ -1,6 +1,7 @@
 FROM caddy:builder AS builder
 
-RUN xcaddy build \
+RUN echo "nameserver 8.8.8.8" > /etc/resolv.conf && \
+    xcaddy build \
     --with github.com/caddyserver/forwardproxy
 
 FROM caddy:latest
