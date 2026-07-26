@@ -50,9 +50,9 @@ SERVER_PORT=$(grep ListenPort "$WG_CONF" | awk '{print $3}')
 
 # Auto-detect VPS public IP
 echo "   Detecting VPS public IP..."
-VPS_IP=$(curl --fail --silent --show-timeout 5 ifconfig.me 2>/dev/null || \
-         curl --fail --silent --show-timeout 5 icanhazip.com 2>/dev/null || \
-         curl --fail --silent --show-timeout 5 api.ipify.org 2>/dev/null)
+VPS_IP=$(curl --fail --silent --connect-timeout 5 ifconfig.me 2>/dev/null || \
+         curl --fail --silent --connect-timeout 5 icanhazip.com 2>/dev/null || \
+         curl --fail --silent --connect-timeout 5 api.ipify.org 2>/dev/null)
 
 if [ -z "$VPS_IP" ]; then
     echo "❌ Could not detect VPS public IP"
