@@ -98,6 +98,13 @@ collect_inputs() {
     # Matrix server name is always the domain
     MATRIX_SERVER_NAME="$DOMAIN"
 
+    # ── WireGuard ──
+    echo ""
+    echo "── WireGuard ──"
+    echo "   Generate a keypair on your client device first."
+    echo "   Example (client): wg genkey | tee /tmp/client.key | wg pubkey > /tmp/client.pub"
+    prompt_input "Peer public key (from your client)" "" WG_PEER_PUBKEY
+
     # ── Icecast ──
     echo ""
     echo "── Icecast ──"
