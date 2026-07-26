@@ -62,7 +62,8 @@ fi
 echo "   VPS IP: $VPS_IP"
 
 # Count existing peers to assign next IP
-PEER_COUNT=$(grep -c '^\[Peer\]' "$WG_CONF" 2>/dev/null || echo "0")
+PEER_COUNT=$(grep -c '^\[Peer\]' "$WG_CONF" || true)
+PEER_COUNT=$((PEER_COUNT + 0))
 NEXT_OCTET=$(( PEER_COUNT + 2 ))
 
 if [ "$NEXT_OCTET" -gt 254 ]; then
