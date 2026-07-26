@@ -52,6 +52,7 @@ export ENABLE_CROWDSEC CROWDSEC_API_KEY
 export PROXY_AUTH PROXY_USER PROXY_PASS
 export NTFY_TOPIC NTFY_TOKEN
 export NEXTDNS_PROFILE
+export ENABLE_CANARYTG
 
 # ── Install host services ──
 echo ""
@@ -118,6 +119,10 @@ if [ "$ENABLE_ICECAST" = "y" ]; then
     mkdir --parents "$SRC_DIR/docker/icecast/data"
 fi
 
+if [ "$ENABLE_CANARYTG" = "y" ]; then
+    mkdir --parents "$SRC_DIR/docker/canarytokens/redis-data"
+fi
+
 # Install Docker if not present
 if ! command -v docker > /dev/null 2>&1; then
     echo "   Installing Docker..."
@@ -142,6 +147,9 @@ cd "$SRC_DIR/docker"
 DOCKER_PROFILES=""
 if [ "$ENABLE_ICECAST" = "y" ]; then
     DOCKER_PROFILES="--profile icecast"
+fi
+if [ "$ENABLE_CANARYTG" = "y" ]; then
+    DOCKER_PROFILES="$DOCKER_PROFILES --profile canarytokens"
 fi
 
 docker compose $DOCKER_PROFILES pull
@@ -211,6 +219,9 @@ if [ "$ENABLE_ICECAST" = "y" ]; then
     echo "  Icecast:    https://radio.$DOMAIN"
 fi
 echo "  NTFY:       https://ntfy.$DOMAIN"
+if [ "$ENABLE_CANARYTG" = "y" ]; then
+    echo "  Canary:    https://canary.$DOMAIN"
+fi
 echo "  Proxy:      https://proxy.$DOMAIN"
 if [ -n "$NEXTDNS_PROFILE" ]; then
     echo "  DNS:        NextDNS (profile: $NEXTDNS_PROFILE)"
@@ -234,5 +245,10 @@ echo "  2. Download the WireGuard client config via scp"
 echo "  3. Add more devices: sudo bash /opt/lemon-vps/host/wireguard/add-peer.sh <name>"
 if [ "$ENABLE_CROWDSEC" = "y" ]; then
     echo "  4. See CrowdSec_Guide.md for CrowdSec setup"
+fi
+if [ "$ENABLE_CANARYTG" = "y" ]; then
+    GUIDE_NUM=4
+    if [ "$ENABLE_CROWDSEC" = "y" ]; then GUIDE_NUM=5; fi
+    echo "  $GUIDE_NUM. See CANARYTG_Guide.md for Canarytokens setup"
 fi
 echo ""

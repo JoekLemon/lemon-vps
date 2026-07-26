@@ -30,6 +30,12 @@ generate_configs() {
     echo "   Generating NTFY auth token..."
     NTFY_TOKEN=$(openssl rand -hex 32)
 
+    # Generate Canarytokens WireGuard key seed
+    if [ "$ENABLE_CANARYTG" = "y" ]; then
+        echo "   Generating Canarytokens WireGuard key seed..."
+        CANARYTG_WG_KEY_SEED=$(dd bs=32 count=1 if=/dev/urandom 2>/dev/null | base64)
+    fi
+
     # sed in-place replacement
     sed_fill() {
         sed -i \
@@ -50,6 +56,7 @@ generate_configs() {
             -e "s|{{PROXY_AUTH}}|$PROXY_AUTH|g" \
             -e "s|{{PROXY_USER}}|$PROXY_USER|g" \
             -e "s|{{PROXY_PASS}}|$PROXY_PASS|g" \
+            -e "s|{{CANARYTG_WG_KEY_SEED}}|$CANARYTG_WG_KEY_SEED|g" \
             "$1"
     }
 
@@ -66,6 +73,13 @@ generate_configs() {
     if [ "$ENABLE_ICECAST" = "y" ]; then
         echo "   Writing Icecast config..."
         sed_fill "$src_dir/docker/icecast/icecast.xml"
+    fi
+
+    # Canarytokens configs (conditional)
+    if [ "$ENABLE_CANARYTG" = "y" ]; then
+        echo "   Writing Canarytokens configs..."
+        sed_fill "$src_dir/docker/canarytokens/frontend.env"
+        sed_fill "$src_dir/docker/canarytokens/switchboard.env"
     fi
 
     # Fix ownership for files that containers write to

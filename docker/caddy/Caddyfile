@@ -42,6 +42,16 @@ ntfy.{{DOMAIN}} {
     reverse_proxy ntfy:80
 }
 
+canary.{{DOMAIN}} {
+    @canary_frontend path /generate* /manage* /download* /history* /settings* /resources* /legal* /robots.txt /.well-known/* /nest* /
+    handle @canary_frontend {
+        reverse_proxy canary-frontend:8082
+    }
+    handle {
+        reverse_proxy canary-switchboard:8083
+    }
+}
+
 # Matrix federation
 {{DOMAIN}}:8448 {
     reverse_proxy synapse:8008

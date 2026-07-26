@@ -29,6 +29,16 @@ if [[ "$ENABLE_ICECAST" = "y" ]]; then
     ufw allow 8000/tcp comment "Icecast"
 fi
 
+# Canarytokens (conditional)
+if [[ "$ENABLE_CANARYTG" = "y" ]]; then
+    echo "   Allowing Canarytokens..."
+    ufw allow 51821/udp comment "Canarytokens WireGuard"
+    ufw allow 5354/tcp comment "Canarytokens DNS"
+    ufw allow 5354/udp comment "Canarytokens DNS UDP"
+    ufw allow 2500/tcp comment "Canarytokens SMTP"
+    ufw allow 3306/tcp comment "Canarytokens MySQL"
+fi
+
 # Reload to apply rules
 echo "   Reloading UFW..."
 ufw reload

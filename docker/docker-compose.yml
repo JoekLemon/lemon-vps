@@ -145,3 +145,45 @@ services:
       timeout: 5s
       retries: 5
       start_period: 15s
+
+  canary-redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    profiles:
+      - canarytokens
+    volumes:
+      - ./canarytokens/redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  canary-frontend:
+    image: thinkst/canarytokens:${CANARYTG_VERSION:-latest}
+    restart: unless-stopped
+    profiles:
+      - canarytokens
+    env_file:
+      - ./canarytokens/frontend.env
+    depends_on:
+      canary-redis:
+        condition: service_healthy
+
+  canary-switchboard:
+    image: thinkst/canarytokens:${CANARYTG_VERSION:-latest}
+    restart: unless-stopped
+    command: switchboard
+    profiles:
+      - canarytokens
+    ports:
+      - "51821:51820/udp"
+      - "5354:5354/tcp"
+      - "5354:5354/udp"
+      - "2500:2500/tcp"
+      - "3306:3306/tcp"
+    env_file:
+      - ./canarytokens/switchboard.env
+    depends_on:
+      canary-redis:
+        condition: service_healthy

@@ -154,6 +154,12 @@ collect_inputs() {
     echo "   Get your profile ID at: https://my.nextdns.io"
     prompt_input "NextDNS profile ID (leave empty to skip)" "" NEXTDNS_PROFILE
 
+    # ── Canarytokens ──
+    echo ""
+    echo "── Canarytokens ──"
+    echo "   Self-hosted honeytokens. Alerts sent via NTFY webhooks."
+    prompt_yes_no "Enable Canarytokens?" "n" ENABLE_CANARYTG
+
     echo ""
     echo "═══════════════════════════════════"
     echo "  Configuration complete"
