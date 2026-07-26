@@ -1,7 +1,5 @@
-# Project docs (not needed on server)
+# Project docs
 PLAN.md
-CrowdSec_Guide.md
-CANARYTG_Guide.md
 
 # Generated at install time (only exists on target VPS)
 host/wireguard/wg0.conf

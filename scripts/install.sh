@@ -262,16 +262,16 @@ echo "  Generated values (SAVE THESE):"
 echo "  ─────────────────────────────────"
 echo "  NTFY auth token: $NTFY_TOKEN"
 echo ""
+echo "  Guides (in /opt/lemon-vps or the repo):"
+echo "  ─────────────────────────────────"
+echo "  WireGuard_Guide.md     — Add devices, split tunnel, troubleshooting"
+echo "  NextCloud_Guide.md     — Desktop/mobile apps, cron, performance"
+echo "  Gitea-Runner_Guide.md  — CI/CD workflows, runner management"
+echo "  CrowdSec_Guide.md      — Bouncer setup, testing bans"
+echo "  CANARYTG_Guide.md      — Token creation, NTFY alerts"
+echo ""
 echo "  Next steps:"
 echo "  1. Point your DNS subdomains to this VPS IP"
 echo "  2. Download the WireGuard client config via scp"
-echo "  3. Add more devices: sudo bash /opt/lemon-vps/host/wireguard/add-peer.sh <name>"
-if [ "$ENABLE_CROWDSEC" = "y" ]; then
-    echo "  4. See CrowdSec_Guide.md for CrowdSec setup"
-fi
-if [ "$ENABLE_CANARYTG" = "y" ]; then
-    GUIDE_NUM=4
-    if [ "$ENABLE_CROWDSEC" = "y" ]; then GUIDE_NUM=5; fi
-    echo "  $GUIDE_NUM. See CANARYTG_Guide.md for Canarytokens setup"
-fi
+echo "  3. See the guides above for detailed setup steps"
 echo ""
