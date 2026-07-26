@@ -45,7 +45,7 @@ fi
 echo "🔑 Generating WireGuard peer: ${PEER_NAME}"
 
 # Get server public key
-SERVER_PUBLIC_KEY=$(wg show wg0 publickey)
+SERVER_PUBLIC_KEY=$(wg show wg0 public-key)
 SERVER_PORT=$(grep ListenPort "$WG_CONF" | awk '{print $3}')
 
 # Auto-detect VPS public IP
