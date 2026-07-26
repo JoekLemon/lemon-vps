@@ -23,7 +23,7 @@ freshclam
 
 # Create quarantine directory
 echo "   Creating quarantine directory..."
-mkdir -p /var/log/clamav/quarantine
+mkdir --parents /var/log/clamav/quarantine
 
 # Deploy hardened clamd.conf
 echo "   Deploying hardened clamd.conf..."

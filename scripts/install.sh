@@ -7,7 +7,7 @@ Contributors:
 Notes:          Called by setup.sh after repo is cloned.
 '
 
-set -e
+set --errexit
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SRC_DIR="$(dirname "$SCRIPT_DIR")"
@@ -73,22 +73,22 @@ echo "════════════════════════�
 
 # Create data directories
 echo "   Creating data directories..."
-mkdir -p "$SRC_DIR/docker/caddy/data"
-mkdir -p "$SRC_DIR/docker/nextcloud/data"
-mkdir -p "$SRC_DIR/docker/gitea/data"
-mkdir -p "$SRC_DIR/docker/ntfy/data"
-mkdir -p "$SRC_DIR/docker/qbittorrent/config"
-mkdir -p "$SRC_DIR/docker/qbittorrent/data"
-mkdir -p "$QBIT_SAVE_PATH"
+mkdir --parents "$SRC_DIR/docker/caddy/data"
+mkdir --parents "$SRC_DIR/docker/nextcloud/data"
+mkdir --parents "$SRC_DIR/docker/gitea/data"
+mkdir --parents "$SRC_DIR/docker/ntfy/data"
+mkdir --parents "$SRC_DIR/docker/qbittorrent/config"
+mkdir --parents "$SRC_DIR/docker/qbittorrent/data"
+mkdir --parents "$QBIT_SAVE_PATH"
 
 if [ "$ENABLE_ICECAST" = "y" ]; then
-    mkdir -p "$SRC_DIR/docker/icecast/data"
+    mkdir --parents "$SRC_DIR/docker/icecast/data"
 fi
 
 # Install Docker if not present
 if ! command -v docker > /dev/null 2>&1; then
     echo "   Installing Docker..."
-    curl -fsSL https://get.docker.com | sh
+    curl --fail --silent --show-error --location https://get.docker.com | sh
 else
     echo "   Docker already installed"
 fi

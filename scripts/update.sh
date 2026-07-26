@@ -7,7 +7,7 @@ Contributors:
 Notes:          Run this periodically or after git pull.
 '
 
-set -e
+set --errexit
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SRC_DIR="$(dirname "$SCRIPT_DIR")"

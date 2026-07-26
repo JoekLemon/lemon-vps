@@ -13,8 +13,8 @@ prompt_input() {
     local var_name="$3"
     local silent="$4"
 
-    if [ -n "$default" ]; then
-        if [ "$silent" = true ]; then
+    if [[ -n "$default" ]]; then
+        if [[ "$silent" = true ]]; then
             read -rp "$prompt [$default]: " -s value
             echo ""
         else
@@ -22,7 +22,7 @@ prompt_input() {
         fi
         value="${value:-$default}"
     else
-        if [ "$silent" = true ]; then
+        if [[ "$silent" = true ]]; then
             read -rp "$prompt: " -s value
             echo ""
         else
@@ -38,7 +38,7 @@ prompt_yes_no() {
     local default="$2"
     local var_name="$3"
 
-    if [ "$default" = "y" ]; then
+    if [[ "$default" = "y" ]]; then
         read -rp "$prompt [Y/n]: " value
         value="${value,,}"
         value="${value:-y}"
@@ -76,7 +76,7 @@ collect_inputs() {
     echo ""
     echo "── Icecast ──"
     prompt_yes_no "Enable Icecast radio streaming?" "y" ENABLE_ICECAST
-    if [ "$ENABLE_ICECAST" = "y" ]; then
+    if [[ "$ENABLE_ICECAST" = "y" ]]; then
         prompt_input "Source password (for streaming clients)" "" ICECAST_SOURCE_PASS
     else
         ICECAST_SOURCE_PASS=""
@@ -96,7 +96,7 @@ collect_inputs() {
     echo ""
     echo "── Forward Proxy ──"
     prompt_yes_no "Require authentication?" "y" PROXY_AUTH
-    if [ "$PROXY_AUTH" = "y" ]; then
+    if [[ "$PROXY_AUTH" = "y" ]]; then
         prompt_input "Proxy username" "proxy" PROXY_USER
         prompt_input "Proxy password" "" PROXY_PASS true
     else
@@ -108,7 +108,7 @@ collect_inputs() {
     echo ""
     echo "── CrowdSec ──"
     prompt_yes_no "Enable CrowdSec intrusion prevention?" "y" ENABLE_CROWDSEC
-    if [ "$ENABLE_CROWDSEC" = "y" ]; then
+    if [[ "$ENABLE_CROWDSEC" = "y" ]]; then
         echo "   Sign up at: https://app.crowdsec.net/"
         prompt_input "CrowdSec Customer ID" "" CROWDSEC_CUSTOMER_ID
         prompt_input "CrowdSec API Key" "" CROWDSEC_API_KEY

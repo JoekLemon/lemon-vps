@@ -7,7 +7,7 @@ Contributors:
 Notes:          Usage: bash <(curl -s https://raw.githubusercontent.com/JoekLemon/lemon-vps/main/setup.sh)
 '
 
-set -e
+set --errexit
 
 REPO="https://github.com/JoekLemon/lemon-vps.git"
 CLONE_DIR="/tmp/lemon-vps"
@@ -33,7 +33,7 @@ fi
 
 # Clone repo
 echo "📥 Downloading lemon-vps..."
-rm -rf "$CLONE_DIR"
+rm --recursive --force "$CLONE_DIR"
 git clone --depth 1 "$REPO" "$CLONE_DIR"
 
 # Run installer
@@ -43,7 +43,7 @@ bash "$CLONE_DIR/scripts/install.sh"
 # Cleanup
 echo ""
 echo "🧹 Cleaning up..."
-rm -rf "$CLONE_DIR"
+rm --recursive --force "$CLONE_DIR"
 
 echo ""
 echo "✅ lemon-vps installed successfully!"

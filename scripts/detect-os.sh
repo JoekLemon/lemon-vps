@@ -8,7 +8,7 @@ Notes:          Supports apt, dnf, and yum package managers.
 '
 
 detect_os() {
-    if [ -f /etc/os-release ]; then
+    if [[ -f /etc/os-release ]]; then
         # shellcheck source=/dev/null
         . /etc/os-release
         OS_ID="$ID"
