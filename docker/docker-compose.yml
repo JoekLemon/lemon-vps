@@ -1,11 +1,7 @@
 ---
 services:
   caddy:
-    build:
-      context: ./caddy
-      dns:
-        - 8.8.8.8
-        - 1.1.1.1
+    build: ./caddy
     restart: unless-stopped
     ports:
       - "80:80"

@@ -139,6 +139,27 @@ else
     echo "   Docker Compose already installed"
 fi
 
+# Configure Docker DNS to bypass NextDNS (which may set system DNS to 10.0.0.1)
+echo "   Configuring Docker DNS..."
+if [ ! -f /etc/docker/daemon.json ] || ! grep -q '"dns"' /etc/docker/daemon.json 2>/dev/null; then
+    mkdir --parents /etc/docker
+    if [ -f /etc/docker/daemon.json ]; then
+        # Add dns key to existing config
+        python3 -c "
+import json
+with open('/etc/docker/daemon.json') as f: cfg = json.load(f)
+cfg['dns'] = ['8.8.8.8', '1.1.1.1']
+with open('/etc/docker/daemon.json', 'w') as f: json.dump(cfg, f, indent=2)
+" 2>/dev/null || echo '{"dns":["8.8.8.8","1.1.1.1"]}' > /etc/docker/daemon.json
+    else
+        echo '{"dns":["8.8.8.8","1.1.1.1"]}' > /etc/docker/daemon.json
+    fi
+    systemctl restart docker
+    echo "   Docker DNS set to 8.8.8.8, 1.1.1.1"
+else
+    echo "   Docker DNS already configured"
+fi
+
 # Pull and start containers
 echo "   Pulling Docker images..."
 cd "$SRC_DIR/docker"
