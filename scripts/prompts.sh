@@ -83,6 +83,11 @@ collect_inputs() {
         useradd --create-home --shell /bin/bash "$SYSTEM_USER"
     fi
 
+    # Add to docker group
+    if getent group docker > /dev/null 2>&1; then
+        usermod --append --groups docker "$SYSTEM_USER"
+    fi
+
     # Set variables based on system user
     SYSTEM_USER_HOME="$(eval echo ~"$SYSTEM_USER")"
     SYSTEM_USER_UID="$(id --user "$SYSTEM_USER")"
