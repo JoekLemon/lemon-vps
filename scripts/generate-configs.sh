@@ -27,6 +27,8 @@ generate_configs() {
     WG_PRIVATE_KEY=$(wg genkey)
     WG_PUBLIC_KEY=$(echo "$WG_PRIVATE_KEY" | wg pubkey)
     WG_PRESHARED_KEY=$(wg genpsk)
+    WG_CLIENT_PRIVATE_KEY=$(wg genkey)
+    WG_CLIENT_PUBLIC_KEY=$(echo "$WG_CLIENT_PRIVATE_KEY" | wg pubkey)
 
     # Generate Matrix signing key
     echo "   Generating Matrix signing key..."
@@ -60,7 +62,8 @@ generate_configs() {
             -e "s|{{PROXY_USER}}|$PROXY_USER|g" \
             -e "s|{{PROXY_PASS}}|$PROXY_PASS|g" \
             -e "s|{{CROWDSEC_CUSTOMER_ID}}|$CROWDSEC_CUSTOMER_ID|g" \
-            -e "s|{{CROWDSEC_API_KEY}}|$CROWDSEC_API_KEY|g"
+            -e "s|{{CROWDSEC_API_KEY}}|$CROWDSEC_API_KEY|g" \
+            "$1"
     }
 
     # Docker configs
@@ -92,7 +95,7 @@ PostUp = iptables -A FORWARD -i wg0 -j ACCEPT; iptables -t nat -A POSTROUTING -o
 PostDown = iptables -D FORWARD -i wg0 -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
 
 [Peer]
-PublicKey = $WG_PEER_PUBKEY
+PublicKey = $WG_CLIENT_PUBLIC_KEY
 PresharedKey = $WG_PRESHARED_KEY
 AllowedIPs = 10.0.0.2/32
 EOF
@@ -105,7 +108,7 @@ EOF
     fi
 
     # Export generated values for later use
-    export WG_PRIVATE_KEY WG_PUBLIC_KEY WG_PRESHARED_KEY MATRIX_SECRET_KEY NTFY_TOKEN
+    export WG_PRIVATE_KEY WG_PUBLIC_KEY WG_PRESHARED_KEY WG_CLIENT_PRIVATE_KEY MATRIX_SECRET_KEY NTFY_TOKEN
 
     echo "✅ Configs generated"
 }
