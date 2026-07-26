@@ -58,8 +58,8 @@ cat > "$WG_CONF" <<EOF
 PrivateKey = $SERVER_PRIVATE_KEY
 Address = 10.0.0.1/24
 ListenPort = 51820
-PostUp = iptables -A FORWARD -i wg0 -j ACCEPT; iptables -t nat -A POSTROUTING -o $PRIMARY_IF -j MASQUERADE
-PostDown = iptables -D FORWARD -i wg0 -j ACCEPT; iptables -t nat -D POSTROUTING -o $PRIMARY_IF -j MASQUERADE
+PostUp = sh -c 'if iptables -L DOCKER-USER >/dev/null 2>&1; then iptables -I DOCKER-USER 1 -i wg0 -j ACCEPT; else iptables -I FORWARD 1 -i wg0 -j ACCEPT; fi'; iptables -t nat -A POSTROUTING -o $PRIMARY_IF -j MASQUERADE
+PostDown = sh -c 'iptables -D DOCKER-USER -i wg0 -j ACCEPT 2>/dev/null; iptables -D FORWARD -i wg0 -j ACCEPT 2>/dev/null'; iptables -t nat -D POSTROUTING -o $PRIMARY_IF -j MASQUERADE
 EOF
 
 chmod 600 "$WG_CONF"

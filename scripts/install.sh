@@ -149,6 +149,14 @@ docker compose $DOCKER_PROFILES pull
 echo "   Starting containers..."
 docker compose $DOCKER_PROFILES up -d
 
+# ── Ensure WireGuard FORWARD rule is in DOCKER-USER ──
+echo "   Configuring WireGuard firewall rules..."
+if iptables -L DOCKER-USER >/dev/null 2>&1 && ! iptables -C DOCKER-USER -i wg0 -j ACCEPT 2>/dev/null; then
+    iptables -I DOCKER-USER 1 -i wg0 -j ACCEPT
+    iptables -D FORWARD -i wg0 -j ACCEPT 2>/dev/null || true
+    echo "   WireGuard rule moved to DOCKER-USER chain"
+fi
+
 # ── Create NTFY admin user ──
 echo "   Setting up NTFY authentication..."
 sleep 3
