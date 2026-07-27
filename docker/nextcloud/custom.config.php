@@ -1,7 +1,7 @@
 <?php
 $CONFIG = array (
   'overwriteprotocol' => 'https',
-  'overwrite.cli.url' => 'https://cloud.' . getenv('NEXTCLOUD_TRUSTED_DOMAINS'),
+  'overwrite.cli.url' => getenv('NEXTCLOUD_TRUSTED_DOMAINS'),
   'trusted_proxies' => ['caddy'],
 
   'default_phone_region' => 'US',

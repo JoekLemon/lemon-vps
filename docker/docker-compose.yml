@@ -89,8 +89,10 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./gitea-runner/config.yaml:/config.yaml:ro
+      - gitea-runner-data:/data
     environment:
       - GITEA_INSTANCE_URL=http://gitea:3000
+      - GITEA_RUNNER_REGISTRATION_TOKEN=${GITEA_RUNNER_REGISTRATION_TOKEN:-}
     depends_on:
       gitea:
         condition: service_healthy
@@ -192,3 +194,6 @@ services:
     depends_on:
       canary-redis:
         condition: service_healthy
+
+volumes:
+  gitea-runner-data:
