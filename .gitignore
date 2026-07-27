@@ -1,6 +1,3 @@
-# Project docs
-PLAN.md
-
 # Generated at install time (only exists on target VPS)
 host/wireguard/wg0.conf
 host/wireguard/clients/
