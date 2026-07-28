@@ -45,7 +45,7 @@ collect_inputs
 generate_configs "$SRC_DIR"
 
 # ── Export variables for sub-scripts ──
-export SRC_DIR DOMAIN EMAIL ADMIN_USER ADMIN_PASS MATRIX_SERVER_NAME
+export SRC_DIR DOMAIN EMAIL ADMIN_USER ADMIN_PASS MATRIX_SERVER_NAME SYNAPSE_DB_USER SYNAPSE_DB_NAME
 export SYSTEM_USER SYSTEM_USER_HOME SYSTEM_USER_UID SYSTEM_USER_GID
 export ENABLE_ICECAST ICECAST_SOURCE_PASS QBIT_SAVE_PATH
 export ENABLE_CROWDSEC CROWDSEC_API_KEY
@@ -108,8 +108,9 @@ echo "════════════════════════�
 # Create data directories
 echo "   Creating data directories..."
 mkdir --parents "$SRC_DIR/docker/caddy/data"
-mkdir --parents "$SRC_DIR/docker/synapse/data"
-mkdir --parents "$SRC_DIR/docker/nextcloud/data"
+    mkdir --parents "$SRC_DIR/docker/synapse/data"
+    mkdir --parents "$SRC_DIR/docker/synapse/postgres"
+    mkdir --parents "$SRC_DIR/docker/nextcloud/data"
 mkdir --parents "$SRC_DIR/docker/gitea/data"
 mkdir --parents "$SRC_DIR/docker/ntfy/data"
 mkdir --parents "$SRC_DIR/docker/qbittorrent/config"

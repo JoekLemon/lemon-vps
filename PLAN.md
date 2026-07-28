@@ -22,10 +22,10 @@ Docker containers: Caddy, Matrix Synapse, NextCloud, Gitea, qBittorrent, Icecast
 - Gitea runner: auto-registers via `GITEA_RUNNER_REGISTRATION_TOKEN` env var, persisted in named Docker volume
 
 ## Status
-All 12 containers running on test VPS `lemontest.xyz` (`209.97.138.175`). Production VPS `64.227.142.22`.
+All 12 containers verified running with Canarytokens enabled.
 
 ## Known Issues / Next Steps
-1. Verify all HTTPS routes accessible on `lemontest.xyz`
+1. Verify all HTTPS routes accessible via Caddy
 2. Test CrowdSec: confirm Caddy access log parsing, bouncer active
 3. Consider: system user docker group, sudoers config
 
@@ -36,7 +36,7 @@ scripts/
   install.sh                # Main orchestrator (Docker DNS, DOCKER-USER, Synapse/NC chown)
   detect-os.sh              # OS detection, pkg helpers
   prompts.sh                # User input
-  generate-configs.sh       # Template replacement (Matrix key, NTFY token, VPS IP)
+  generate-configs.sh       # Template replacement (Matrix key, NTFY token, VPS IP, DB pass)
   update.sh                 # Re-pull images, restart
 host/
   ufw/install.sh, rules.sh
@@ -61,6 +61,7 @@ docker/
 - `sed_fill` needs `"$1"` arg or `sed: no input files`
 - NextCloud `custom.config.php`: `overwrite.cli.url` uses `getenv()` directly (was double-concatenating)
 - NextCloud `config.php`: entrypoint merges as root, PHP runs as `www-data` — chown after install
+- Synapse uses PostgreSQL (psycopg2) — `SYNAPSE_DB_PASSWORD` auto-generated, `SYNAPSE_DB_USER`/`SYNAPSE_DB_NAME` default to `synapse`
 - Synapse data dir: created by root, Synapse runs as UID 999 — chown after install
 - Gitea runner API: `/api/v1/user/actions/runners/registration-token` (includes `actions`)
 - Gitea runner registration: use `docker exec -u git gitea gitea actions generate-runner-token` CLI, not API

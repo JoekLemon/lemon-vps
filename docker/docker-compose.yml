@@ -17,9 +17,28 @@ services:
       retries: 3
       start_period: 10s
 
+  postgres:
+    image: postgres:${POSTGRES_VERSION:-16-alpine}
+    restart: unless-stopped
+    volumes:
+      - ./synapse/postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${SYNAPSE_DB_USER}
+      - POSTGRES_PASSWORD=${SYNAPSE_DB_PASSWORD}
+      - POSTGRES_DB=${SYNAPSE_DB_NAME}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${SYNAPSE_DB_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
   synapse:
     image: matrixdotorg/synapse:${SYNAPSE_VERSION:-latest}
     restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
     volumes:
       - ./synapse/data:/data
       - ./synapse/homeserver.yaml:/data/homeserver.yaml:ro

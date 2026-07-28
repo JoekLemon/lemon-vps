@@ -30,6 +30,10 @@ generate_configs() {
     echo "   Generating NTFY auth token..."
     NTFY_TOKEN=$(openssl rand -hex 32)
 
+    # Generate Synapse database password
+    echo "   Generating Synapse database password..."
+    SYNAPSE_DB_PASSWORD=$(openssl rand -hex 32)
+
     # Generate Canarytokens WireGuard key seed
     if [ "$ENABLE_CANARYTG" = "y" ]; then
         echo "   Generating Canarytokens WireGuard key seed..."
@@ -49,6 +53,9 @@ generate_configs() {
             -e "s|{{SYSTEM_USER_HOME}}|$SYSTEM_USER_HOME|g" \
             -e "s|{{SYSTEM_USER_UID}}|$SYSTEM_USER_UID|g" \
             -e "s|{{SYSTEM_USER_GID}}|$SYSTEM_USER_GID|g" \
+            -e "s|{{SYNAPSE_DB_USER}}|$SYNAPSE_DB_USER|g" \
+            -e "s|{{SYNAPSE_DB_PASSWORD}}|$SYNAPSE_DB_PASSWORD|g" \
+            -e "s|{{SYNAPSE_DB_NAME}}|$SYNAPSE_DB_NAME|g" \
             -e "s|{{MATRIX_SERVER_NAME}}|$MATRIX_SERVER_NAME|g" \
             -e "s|{{MATRIX_SECRET_KEY}}|$MATRIX_SECRET_KEY|g" \
             -e "s|{{ICECAST_SOURCE_PASS}}|$ICECAST_SOURCE_PASS|g" \
@@ -92,7 +99,7 @@ generate_configs() {
     chown 1000:1000 "$src_dir/docker/gitea/data/gitea/conf/" 2>/dev/null || true
 
     # Export generated values for later use
-    export MATRIX_SECRET_KEY NTFY_TOKEN
+    export MATRIX_SECRET_KEY NTFY_TOKEN SYNAPSE_DB_PASSWORD
 
     echo "✅ Configs generated"
 }

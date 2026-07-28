@@ -103,6 +103,10 @@ collect_inputs() {
     # Matrix server name is always the domain
     MATRIX_SERVER_NAME="$DOMAIN"
 
+    # Synapse database defaults
+    SYNAPSE_DB_USER="synapse"
+    SYNAPSE_DB_NAME="synapse"
+
     # ── Icecast ──
     echo ""
     echo "── Icecast ──"

@@ -14,24 +14,39 @@ listeners:
         compress: false
 
 database:
-  name: sqlite3
+  name: psycopg2
   args:
-    database: /data/homeserver.db
+    user: {{SYNAPSE_DB_USER}}
+    password: {{SYNAPSE_DB_PASSWORD}}
+    database: {{SYNAPSE_DB_NAME}}
+    host: postgres
+    port: 5432
+    cp_min: 5
+    cp_max: 10
 
 media_store_path: /data/media_store
 upload_size: 52428800
 url_preview_enabled: false
 
-enable_registration: true
-enable_registration_without_verification: true
+enable_registration: false
 
 report_stats: false
 
 signing_key_path: /data/signing.key
 old_signing_keys: {}
 
+# Prevent SSRF: block federation to private/internal IP ranges
+federation_ip_range_denylist:
+  - '127.0.0.0/8'
+  - '10.0.0.0/8'
+  - '172.16.0.0/12'
+  - '192.168.0.0/16'
+  - '::1/128'
+  - 'fe80::/64'
+
 trusted_servers:
   - matrix.org
 
+registration_shared_secret: "{{MATRIX_SECRET_KEY}}"
 macaroon_secret_key: "{{MATRIX_SECRET_KEY}}"
 form_secret: "{{MATRIX_SECRET_KEY}}"
