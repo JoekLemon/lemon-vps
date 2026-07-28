@@ -49,19 +49,18 @@ echo "   Installing NextDNS..."
 dpkg --install "$NEXTDNS_DEB"
 rm -f "$NEXTDNS_DEB"
 
-# Configure and activate
+# Configure (without auto-activate to avoid race with systemctl below)
 echo "   Configuring NextDNS (profile: $NEXTDNS_PROFILE)..."
 nextdns install \
     -config "$NEXTDNS_PROFILE" \
     -listen 10.0.0.1:53 \
     -listen 127.0.0.1:53 \
     -report-client-info \
-    -cache-size 10MB \
-    -auto-activate
+    -cache-size 10MB || echo "   ⚠️  nextdns install had issues, continuing..."
 
 # Enable and start
 echo "   Starting NextDNS..."
-systemctl enable --now nextdns
+systemctl enable --now nextdns 2>/dev/null || echo "   ⚠️  NextDNS start had issues, continuing..."
 
 # Verify it's listening
 sleep 2
