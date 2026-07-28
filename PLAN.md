@@ -23,11 +23,13 @@ Docker containers: Caddy, Matrix Synapse, NextCloud, Gitea, qBittorrent, Icecast
 
 ## Status
 All 12 containers verified running with Canarytokens enabled.
+Synapse + PostgreSQL verified healthy on test VPS after fixes below.
 
 ## Known Issues / Next Steps
 1. Verify all HTTPS routes accessible via Caddy
 2. Test CrowdSec: confirm Caddy access log parsing, bouncer active
 3. Consider: system user docker group, sudoers config
+4. Nextcloud: requires web-based setup on first boot (503 until completed)
 
 ## File Structure
 ```
@@ -62,9 +64,39 @@ docker/
 - NextCloud `custom.config.php`: `overwrite.cli.url` uses `getenv()` directly (was double-concatenating)
 - NextCloud `config.php`: entrypoint merges as root, PHP runs as `www-data` — chown after install
 - Synapse uses PostgreSQL (psycopg2) — `SYNAPSE_DB_PASSWORD` auto-generated, `SYNAPSE_DB_USER`/`SYNAPSE_DB_NAME` default to `synapse`
-- Synapse data dir: created by root, Synapse runs as UID 999 — chown after install
+- Synapse data dir: created by root, Synapse runs as UID 991 — chown after install
+- Postgres `initdb` locale: Synapse requires UTF8 encoding and C collation — set `POSTGRES_INITDB_ARGS=--encoding=UTF8 --lc-collate=C --lc-ctype=C`
 - Gitea runner API: `/api/v1/user/actions/runners/registration-token` (includes `actions`)
 - Gitea runner registration: use `docker exec -u git gitea gitea actions generate-runner-token` CLI, not API
 - Gitea runner persistence: named `gitea-runner-data` volume stores `.runner` file
 - CrowdSec bouncer: `crowdsec-firewall-bouncer-iptables` on Debian 13
 - Docker DNS: system DNS (`10.0.0.1`) breaks container resolution — `daemon.json` with Quad9
+
+## Backlog
+
+### Kasm Workspaces (containerized desktop streaming)
+**Status**: Planned, not implemented. Requires VPS upgrade to CX42 (16 GB, 8 vCPU) or similar.
+
+**Integration approach**: LinuxServer.io Docker image (`lscr.io/linuxserver/kasm`) — runs Kasm in Docker-in-Docker, avoids official installer.
+
+**Resource budget** (CX42, 16 GB):
+| Component | RAM |
+|-----------|-----|
+| Existing 9 containers (idle) | ~2.5 GiB |
+| Kasm server services | ~1.5 GiB |
+| 2-3 workspace sessions (capped) | ~4 GiB |
+| **Total** | **~8 GiB** |
+
+**Implementation checklist**:
+- [ ] `docker/docker-compose.yml`: add `kasm` service (privileged, `--profile kasm`, maps 4443:443)
+- [ ] `docker/caddy/Caddyfile`: add `kasm.{{DOMAIN}}` → `kasm:443` (with `tls_insecure_skip_verify`)
+- [ ] `docker/.env`: add `KASM_VERSION=latest`
+- [ ] `scripts/prompts.sh`: add `ENABLE_KASM` prompt
+- [ ] `scripts/install.sh`: conditional swap (8 GiB file), sysctl `vm.max_map_count=262144`, `--profile kasm`
+- [ ] Post-install: cap workspace images to 1.5 GiB / 1 CPU via Admin UI
+
+**Constraints**:
+- Community Edition caps at 5 concurrent sessions
+- Privileged container required (Docker-in-Docker)
+- Each workspace session defaults to 2.8 GiB / 2 cores — must lower in Admin UI
+- Requires 8+ GiB swap for stability

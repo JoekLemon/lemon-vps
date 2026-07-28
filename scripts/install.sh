@@ -117,8 +117,8 @@ mkdir --parents "$SRC_DIR/docker/qbittorrent/config"
 mkdir --parents "$SRC_DIR/docker/qbittorrent/data"
 mkdir --parents "$QBIT_SAVE_PATH"
 
-# Synapse runs as UID 999 — fix ownership before starting
-chown -R 999:999 "$SRC_DIR/docker/synapse/data"
+# Synapse UID 991 in the Docker image — fix ownership before starting
+chown -R 991:991 "$SRC_DIR/docker/synapse/data"
 
 if [ "$ENABLE_ICECAST" = "y" ]; then
     mkdir --parents "$SRC_DIR/docker/icecast/data"
