@@ -195,30 +195,30 @@ fi
 # ── Create NTFY admin user ──
 echo "   Setting up NTFY authentication..."
 sleep 3
-docker exec ntfy ntfy user add --role admin "$ADMIN_USER" <<< "$ADMIN_PASS" > /dev/null 2>&1 || echo "   ⚠️  NTFY user creation may need manual setup"
+docker compose exec -T ntfy ntfy user add --role admin "$ADMIN_USER" <<< "$ADMIN_PASS" > /dev/null 2>&1 || echo "   ⚠️  NTFY user creation may need manual setup"
 
 # ── Install NextCloud if not auto-installed ──
 echo "   Checking NextCloud installation..."
 sleep 5
-if ! docker exec nextcloud php occ status 2>/dev/null | grep -q 'installed: true'; then
+if ! docker compose exec -T nextcloud php occ status 2>/dev/null | grep -q 'installed: true'; then
     echo "   Installing NextCloud..."
-    docker exec nextcloud php occ maintenance:install \
+    docker compose exec -T nextcloud php occ maintenance:install \
         --admin-user="$ADMIN_USER" \
         --admin-pass="$ADMIN_PASS" \
         --database=sqlite > /dev/null 2>&1 || echo "   ⚠️  NextCloud install may need manual setup"
-    docker exec nextcloud php occ config:system:set trusted_domains 1 --value="https://cloud.$DOMAIN" > /dev/null 2>&1 || true
+    docker compose exec -T nextcloud php occ config:system:set trusted_domains 1 --value="https://cloud.$DOMAIN" > /dev/null 2>&1 || true
 fi
 # Fix config.php ownership (entrypoint merges as root, PHP runs as www-data)
-docker exec nextcloud chown www-data:www-data /var/www/html/config/config.php 2>/dev/null || true
-docker exec nextcloud chmod 640 /var/www/html/config/config.php 2>/dev/null || true
+docker compose exec -T nextcloud chown www-data:www-data /var/www/html/config/config.php 2>/dev/null || true
+docker compose exec -T nextcloud chmod 640 /var/www/html/config/config.php 2>/dev/null || true
 
 # ── Register Gitea runner ──
 echo "   Registering Gitea runner..."
 sleep 5
-RUNNER_TOKEN=$(docker exec -u git gitea gitea actions generate-runner-token 2>/dev/null) || true
+RUNNER_TOKEN=$(docker compose exec -T -u git gitea gitea actions generate-runner-token 2>/dev/null) || true
 
 if [ -n "$RUNNER_TOKEN" ]; then
-    echo "GITEA_RUNNER_REGISTRATION_TOKEN=$RUNNER_TOKEN" >> "$CLONE_DIR/docker/.env"
+    echo "GITEA_RUNNER_REGISTRATION_TOKEN=$RUNNER_TOKEN" >> "$SRC_DIR/docker/.env"
     docker compose up -d --force-recreate gitea-runner > /dev/null 2>&1 || echo "   ⚠️  Runner registration may need manual setup"
 else
     echo "   ⚠️  Could not register runner — do it manually from Gitea UI"
