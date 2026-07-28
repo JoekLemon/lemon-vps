@@ -35,6 +35,19 @@ report_stats: false
 signing_key_path: /data/signing.key
 old_signing_keys: {}
 
+retention:
+  enabled: true
+  default_policy:
+    min_lifetime_days: 7
+    max_lifetime_days: 365
+  purge_jobs:
+    - interval: 12h
+    - interval: 1d
+  retainment_method: age
+
+user_ips_max_age: 30d
+redaction_retention_period: 30d
+
 # Prevent SSRF: block federation to private/internal IP ranges
 federation_ip_range_denylist:
   - '127.0.0.0/8'

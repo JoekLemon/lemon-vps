@@ -47,7 +47,7 @@ host/
 docker/
   docker-compose.yml, .env
   caddy/Dockerfile, Caddyfile
-  synapse/homeserver.yaml
+  synapse/homeserver.yaml, homeserver.md, add-user.sh
   nextcloud/custom.config.php
   gitea/app.ini, Guide.md
   gitea-runner/config.yaml
