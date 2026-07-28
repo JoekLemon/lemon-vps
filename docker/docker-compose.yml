@@ -1,6 +1,7 @@
 ---
 services:
   caddy:
+    hostname: caddy
     build: ./caddy
     restart: unless-stopped
     ports:
@@ -18,6 +19,7 @@ services:
       start_period: 10s
 
   postgres:
+    hostname: postgres
     image: postgres:${POSTGRES_VERSION:-16-alpine}
     restart: unless-stopped
     volumes:
@@ -35,6 +37,7 @@ services:
       start_period: 15s
 
   synapse:
+    hostname: synapse
     image: matrixdotorg/synapse:${SYNAPSE_VERSION:-latest}
     restart: unless-stopped
     depends_on:
@@ -54,6 +57,7 @@ services:
       start_period: 60s
 
   nextcloud:
+    hostname: nextcloud
     image: nextcloud:${NEXTCLOUD_VERSION:-latest}
     restart: unless-stopped
     depends_on:
@@ -76,6 +80,7 @@ services:
       start_period: 90s
 
   redis:
+    hostname: redis
     image: redis:7-alpine
     restart: unless-stopped
     healthcheck:
@@ -85,6 +90,7 @@ services:
       retries: 3
 
   gitea:
+    hostname: gitea
     image: gitea/gitea:${GITEA_VERSION:-latest}
     restart: unless-stopped
     volumes:
@@ -104,6 +110,7 @@ services:
       start_period: 60s
 
   gitea-runner:
+    hostname: gitea-runner
     image: gitea/act_runner:${GITEA_RUNNER_VERSION:-latest}
     restart: unless-stopped
     volumes:
@@ -118,6 +125,7 @@ services:
         condition: service_healthy
 
   icecast:
+    hostname: icecast
     image: ghcr.io/jee-r/icecast:${ICECAST_VERSION:-latest}
     restart: unless-stopped
     profiles:
@@ -135,6 +143,7 @@ services:
       start_period: 10s
 
   qbittorrent:
+    hostname: qbittorrent
     image: lscr.io/linuxserver/qbittorrent:${QBITTORRENT_VERSION:-latest}
     restart: unless-stopped
     environment:
@@ -153,6 +162,7 @@ services:
       start_period: 30s
 
   ntfy:
+    hostname: ntfy
     image: binwiederhier/ntfy:${NTFY_VERSION:-latest}
     restart: unless-stopped
     command: serve
@@ -169,6 +179,7 @@ services:
       start_period: 15s
 
   canary-redis:
+    hostname: canary-redis
     image: redis:7-alpine
     restart: unless-stopped
     profiles:
@@ -182,6 +193,7 @@ services:
       retries: 3
 
   canary-frontend:
+    hostname: canary-frontend
     image: thinkst/canarytokens:${CANARYTG_VERSION:-latest}
     restart: unless-stopped
     command: bash -c "cd frontend; uv run --no-sync python -m uvicorn app:app --host 0.0.0.0 --port 8082"
@@ -196,6 +208,7 @@ services:
         condition: service_healthy
 
   canary-switchboard:
+    hostname: canary-switchboard
     image: thinkst/canarytokens:${CANARYTG_VERSION:-latest}
     restart: unless-stopped
     command: bash -c "cd switchboard; rm -f switchboard.pid; uv run --no-sync twistd -noy switchboard.tac --pidfile=switchboard.pid"
