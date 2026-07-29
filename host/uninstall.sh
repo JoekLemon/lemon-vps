@@ -77,11 +77,11 @@ echo "   ✅ Config files removed"
 # ── Repo ──
 echo ""
 echo "── Repo ──"
-if [ -d "/opt/lemon-vps" ]; then
-    rm -rf /opt/lemon-vps
-    echo "   ✅ /opt/lemon-vps removed"
+if [ -d "$SRC_DIR" ]; then
+    rm -rf "$SRC_DIR"
+    echo "   ✅ $SRC_DIR removed"
 else
-    echo "   ⏭️  /opt/lemon-vps not found"
+    echo "   ⏭️  $SRC_DIR not found"
 fi
 
 # ── Packages (optional) ──
