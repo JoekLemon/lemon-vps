@@ -22,11 +22,20 @@ git -C "$SRC_DIR" pull --ff-only || echo "   ⚠️  Git pull failed"
 # ── Update Docker containers ──
 echo "── Docker ──"
 cd "$SRC_DIR/docker"
+
+PROFILES=""
+if docker compose ps 2>/dev/null | grep -q "icecast"; then
+    PROFILES="$PROFILES --profile icecast"
+fi
+if docker compose ps 2>/dev/null | grep -q "canary"; then
+    PROFILES="$PROFILES --profile canarytokens"
+fi
+
 echo "   Pulling latest images..."
-docker compose pull
+docker compose $PROFILES pull
 
 echo "   Restarting containers..."
-docker compose up -d
+docker compose $PROFILES up -d
 
 # ── Update CrowdSec ──
 echo ""

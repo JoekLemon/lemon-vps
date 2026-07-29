@@ -13,7 +13,7 @@
 
 ## Medium
 
-- [ ] **`update.sh` ignores Docker profiles**: `docker compose pull` / `up -d` without `--profile icecast --profile canarytokens` means optional services never get updated.
+- [x] **`update.sh` ignores Docker profiles**: Now detects running icecast/canary containers and adds appropriate `--profile` flags.
 - [ ] **NextCloud uses SQLite**: PostgreSQL is already running in the stack but `occ maintenance:install --database=sqlite` is used. Should use Postgres for multi-user scalability.
 - [ ] **Shared `MATRIX_SECRET_KEY` across Synapse and Gitea**: Same secret used as Synapse `registration_shared_secret`/`macaroon_secret_key`/`form_secret` AND Gitea `SECRET_KEY`/`INTERNAL_TOKEN`. Each should have a unique generated secret.
 - [ ] **`VPS_PUBLIC_IP` has no fallback**: If both `api.ipify.org` and `ifconfig.co` fail in `generate-configs.sh`, Canarytokens `frontend.env` gets empty IP, breaking token URLs.
