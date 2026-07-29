@@ -7,6 +7,8 @@ Contributors:
 Notes:          Sets deny incoming, allow outgoing by default.
 '
 
+set -o errexit
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SRC_DIR="$(dirname "$(dirname "$SCRIPT_DIR")")"
 # shellcheck source=../../scripts/detect-os.sh

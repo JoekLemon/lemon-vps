@@ -8,6 +8,8 @@ Contributors:
 Notes:          Full pipeline: engine → bouncer → acquisition → collections → scenarios.
 '
 
+set -o errexit
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SRC_DIR="$(dirname "$(dirname "$SCRIPT_DIR")")"
 # shellcheck source=../../scripts/detect-os.sh
