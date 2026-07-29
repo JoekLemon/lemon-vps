@@ -6,7 +6,6 @@ Documentation=man:systemd.timer(5)
 OnCalendar=Sat *-*-* 12:00:00
 Persistent=true
 AccuracySec=1m
-WakeSystem=true
 Unit=lemon-clamscan.service
 
 [Install]
