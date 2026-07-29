@@ -32,6 +32,7 @@
     </mount>
 
     <fileserve>
+        <enabled>1</enabled>
         <aliases>
             <alias name="/static" destination="/music"/>
         </aliases>

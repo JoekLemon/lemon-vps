@@ -9,7 +9,7 @@
 ## High
 
 - [x] **CrowdSec Guide references wrong bouncer**: Updated all refs in `host/crowdsec/Guide.md` — `crowdsec-firewall-bouncer-ufw` → `crowdsec-firewall-bouncer-iptables`.
-- [ ] **Icecast GUI unstyled**: `<fileserve>` block missing `<enabled>1</enabled>` — static assets (CSS, images, favicon) return 404. Fix in `docker/icecast/icecast.xml` and recreate container.
+- [x] **Icecast GUI unstyled**: Added `<enabled>1</enabled>` to `<fileserve>` block in `docker/icecast/icecast.xml`. Container recreate required to pick up the change.
 
 ## Medium
 
