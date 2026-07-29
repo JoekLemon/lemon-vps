@@ -22,17 +22,13 @@ Docker containers: Caddy, Matrix Synapse, NextCloud, Gitea, qBittorrent, Icecast
 - Gitea runner: auto-registers via `GITEA_RUNNER_REGISTRATION_TOKEN` env var, persisted in named Docker volume
 
 ## Status
-See [`TODO.md`](./TODO.md) for all outstanding bugs and feature work.
+All items in [`TODO.md`](./TODO.md) are resolved.
 
 ### Next Steps
-1. Fix critical `.env` hardcoding bug (ICECAST_SOURCE_PASS, QBIT_SAVE_PATH)
-2. Fix ClamAV logrotate service name
-3. Fix Caddy proxy auth when disabled
-4. Update CrowdSec Guide.md bouncer references
-5. Verify all HTTPS routes accessible via Caddy
-6. Test CrowdSec: confirm Caddy access log parsing, bouncer active
-7. Consider: system user docker group, sudoers config
-8. Nextcloud: requires web-based setup on first boot (503 until completed)
+1. Verify all HTTPS routes accessible via Caddy
+2. Test CrowdSec: confirm Caddy access log parsing, bouncer active
+3. Consider: system user docker group, sudoers config
+4. Nextcloud: requires web-based setup on first boot (503 until completed)
 
 ## File Structure
 ```
@@ -67,21 +63,36 @@ docker/
   canarytokens/frontend.env, switchboard.env, Guide.md
 ```
 
-## Critical Fixes to Remember
+## Critical Fixes Applied
 - `sed_fill` needs `"$1"` arg or `sed: no input files`
 - NextCloud `custom.config.php`: `overwrite.cli.url` uses `getenv()` directly (was double-concatenating)
 - NextCloud `config.php`: entrypoint merges as root, PHP runs as `www-data` — chown after install
 - Synapse uses PostgreSQL (psycopg2) — `SYNAPSE_DB_PASSWORD` auto-generated, `SYNAPSE_DB_USER`/`SYNAPSE_DB_NAME` default to `synapse`
 - Synapse data dir: created by root, Synapse runs as UID 991 — chown after install
 - Postgres `initdb` locale: Synapse requires UTF8 encoding and C collation — set `POSTGRES_INITDB_ARGS=--encoding=UTF8 --lc-collate=C --lc-ctype=C`
+- NextCloud PostgreSQL: NextCloud now uses Postgres (`--database=pgsql`) instead of SQLite; DB/user auto-created before container starts
+- Gitea secret key: unique `GITEA_SECRET_KEY` generated instead of reusing `MATRIX_SECRET_KEY`
 - Gitea runner API: `/api/v1/user/actions/runners/registration-token` (includes `actions`)
 - Gitea runner registration: use `docker exec -u git gitea gitea actions generate-runner-token` CLI, not API
 - Gitea runner persistence: named `gitea-runner-data` volume stores `.runner` file
 - CrowdSec bouncer: `crowdsec-firewall-bouncer-iptables` on Debian 13
 - Docker DNS: system DNS (`10.0.0.1`) breaks container resolution — `daemon.json` with Quad9
-- ~~`.env` must use `{{PLACEHOLDER}}` syntax for any value that `sed_fill` should replace~~ (fixed — `ICECAST_SOURCE_PASS` and `QBIT_SAVE_PATH` now use placeholders)
-- ~~ClamAV logrotate: signal target must use `lemon-` prefixed service names~~ (fixed — `clamav-clamonacc.service` → `lemon-clamonacc.service`)
-- ~~Caddyfile `basic_auth` must be omitted entirely when `PROXY_AUTH=n`~~ (fixed — `generate-configs.sh` deletes the line before sed_fill when auth is off)
+- `.env` placeholders: `ICECAST_SOURCE_PASS` and `QBIT_SAVE_PATH` use `{{PLACEHOLDER}}` syntax
+- ClamAV logrotate: `clamav-clamonacc.service` → `lemon-clamonacc.service`
+- Caddy proxy auth: `basic_auth` line deleted when `PROXY_AUTH != "y"`
+- CrowdSec Guide: `ufw` → `iptables` bouncer references
+- Icecast: `<fileserve>` enabled for GUI assets
+- `update.sh`: auto-detects running profiles and adds `--profile` flags
+- `VPS_PUBLIC_IP`: multiple fallback services + `"unknown"` default
+- NextDNS arch: `dpkg --print-architecture` → `uname -m`
+- `apt update`: guarded by `_pkg_updated` flag to avoid redundant calls
+- `NTFY_TOKEN`: registered with `ntfy token add` after user creation
+- Timezone: `TZ=UTC` → `TZ=${TZ:-UTC}` configurable via `.env`
+- `freshclam`: removed redundant `ExecStartPre` from `lemon-clamscan.service`
+- `WakeSystem=true`: removed from `lemon-clamscan.timer`
+- NTFY setup: `sleep 3` → healthcheck wait loop
+- `wg syncconf`: kernel-version fallback to `wg setconf` for pre-5.6 kernels
+- Canarytokens frontend: no longer mounts `switchboard.env`
 
 ## Backlog
 
