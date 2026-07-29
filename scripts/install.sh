@@ -341,6 +341,8 @@ cp "$SRC_DIR/host/notify-wrapper.sh" /usr/local/bin/lemon-notify
 chmod 755 /usr/local/bin/lemon-notify
 cp "$SRC_DIR/host/upgrade-wrapper.sh" /usr/local/bin/upgrade
 chmod 755 /usr/local/bin/upgrade
+cp "$SRC_DIR/host/config-wrapper.sh" /usr/local/bin/lemon-config
+chmod 755 /usr/local/bin/lemon-config
 
 # ── Smoke test ──
 echo "   Running smoke test..."
@@ -394,7 +396,8 @@ echo "  Run 'sudo update' to refresh containers and definitions (no code change)
 echo "  Run 'sudo upgrade' to pull latest code, then update everything"
 echo "  Run 'sudo lemon-status' for a quick health overview"
 echo "  Run 'sudo lemon-smoke' for a full smoke test"
-echo "  Run 'sudo lemon-notify <msg>' to send a push notification"
+  echo "  Run 'sudo lemon-notify <msg>' to send a push notification"
+  echo "  Run 'sudo lemon-config' to reconfigure services after install"
 echo ""
 echo "  Next steps:"
 echo "  1. Point your DNS subdomains to this VPS IP"
