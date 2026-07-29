@@ -4,7 +4,7 @@
 
 - [x] **`.env` hardcodes `ICECAST_SOURCE_PASS` and `QBIT_SAVE_PATH`**: Changed to `{{PLACEHOLDER}}` syntax in `docker/.env` so `sed_fill` picks them up.
 - [x] **ClamAV logrotate wrong service name**: Fixed `host/clamav/config/clamonacc_logrotate.conf` — `clamav-clamonacc.service` → `lemon-clamonacc.service`.
-- [ ] **Caddy proxy auth breaks when auth disabled**: Caddyfile always emits `basic_auth {{PROXY_USER}} {{PROXY_PASS}}`. When `PROXY_AUTH=n` both are empty, Caddy fails to start. Need conditional to omit `basic_auth` entirely when auth is off.
+- [x] **Caddy proxy auth breaks when auth disabled**: `generate-configs.sh` now deletes the `basic_auth` line from Caddyfile when `PROXY_AUTH != "y"` before running `sed_fill`.
 
 ## High
 

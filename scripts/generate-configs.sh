@@ -73,6 +73,11 @@ generate_configs() {
     # Docker configs
     echo "   Writing docker configs..."
     sed_fill "$src_dir/docker/.env"
+
+    # Remove basic_auth from Caddyfile if proxy auth is disabled
+    if [ "$PROXY_AUTH" != "y" ]; then
+        sed -i "/basic_auth/d" "$src_dir/docker/caddy/Caddyfile"
+    fi
     sed_fill "$src_dir/docker/caddy/Caddyfile"
     sed_fill "$src_dir/docker/synapse/homeserver.yaml"
     sed_fill "$src_dir/docker/gitea/app.ini"
