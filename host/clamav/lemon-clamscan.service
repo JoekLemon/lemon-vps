@@ -8,7 +8,6 @@ Documentation=man:clamscan(1) https://www.clamav.net/documents/
 [Service]
 Type=oneshot
 User=root
-ExecStartPre=/usr/bin/freshclam --quiet
 ExecStart=/usr/bin/clamscan --recursive --infected --move=/var/log/clamav/quarantine --log=/var/log/clamav/clamscan.log --exclude-dir=/var/log/clamav/ --exclude-dir=/proc/ --exclude-dir=/sys/ --exclude-dir=/dev/ --exclude-dir=/run/ --exclude-dir=/var/lib/docker/ --exclude-dir=/var/lib/containerd/ --exclude-dir=/boot/ --exclude-dir=/snap/ --quiet /
 ExecStartPost=/usr/bin/systemctl start lemon-clamav-logrotate.service
 SuccessExitStatus=0
