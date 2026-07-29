@@ -30,6 +30,8 @@ Synapse + PostgreSQL verified healthy on test VPS after fixes below.
 2. Test CrowdSec: confirm Caddy access log parsing, bouncer active
 3. Consider: system user docker group, sudoers config
 4. Nextcloud: requires web-based setup on first boot (503 until completed)
+5. **Icecast GUI unstyled**: `<fileserve>` block missing `<enabled>1</enabled>` — static assets (CSS, images, favicon) return 404. Fix in `docker/icecast/icecast.xml` and recreate container.
+6. **Placeholder substitution**: `generate-configs.sh` fails to substitute many `{{PLACEHOLDER}}` values in `.env` (e.g. `DOMAIN`, `ADMIN_USER`, `ADMIN_PASS`). After fixing `.env`, affected services need config regeneration and container recreation.
 
 ## File Structure
 ```
