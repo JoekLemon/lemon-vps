@@ -1,0 +1,13 @@
+[Unit]
+Description=Daily lemon-vps health check (smoke test + NTFY alert on failure)
+Documentation=man:systemd.timer(5)
+
+[Timer]
+OnCalendar=daily
+RandomizedDelaySec=1h
+Persistent=true
+AccuracySec=1m
+Unit=lemon-health.service
+
+[Install]
+WantedBy=timers.target

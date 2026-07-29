@@ -319,6 +319,16 @@ else
     echo "   ⚠️  Could not set qBittorrent password — set manually in Web UI"
 fi
 
+# ── Health check timer ──
+echo ""
+echo "── Health Check ──"
+echo "   Deploying health check systemd units..."
+cp "$SRC_DIR/host/lemon-health.service" /etc/systemd/system/
+cp "$SRC_DIR/host/lemon-health.timer" /etc/systemd/system/
+systemctl daemon-reload
+systemctl enable --now lemon-health.timer || echo "   ⚠️  Failed to enable health check timer"
+echo "   ✅ Daily health check installed (runs at 06:00 ±1h)"
+
 # ── Install commands ──
 echo "   Installing commands..."
 cp "$SRC_DIR/host/update-wrapper.sh" /usr/local/bin/update
