@@ -224,6 +224,25 @@ else
     echo "   ⚠️  Could not register runner — do it manually from Gitea UI"
 fi
 
+# ── Set qBittorrent password ──
+echo "   Setting qBittorrent password..."
+QBIT_TEMP_PASS=$(docker logs docker-qbittorrent-1 2>/dev/null | grep "temporary password" | tail -1 | awk '{print $NF}')
+QBIT_IP=$(docker inspect docker-qbittorrent-1 --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' 2>/dev/null)
+if [ -n "$QBIT_TEMP_PASS" ] && [ -n "$QBIT_IP" ]; then
+    QBIT_SID=$(curl -s -c - "http://$QBIT_IP:8080/api/v2/auth/login" \
+        -d "username=admin&password=$QBIT_TEMP_PASS" 2>/dev/null | grep SID | awk '{print $NF}')
+    if [ -n "$QBIT_SID" ]; then
+        QBIT_PASS="${ADMIN_PASS}admin"
+        curl -s -b "SID=$QBIT_SID" -X POST "http://$QBIT_IP:8080/api/v2/app/setPreferences" \
+            -d "json={\"web_ui_password\":\"$QBIT_PASS\"}" > /dev/null 2>&1
+        echo "   ✅ qBittorrent password set (user: admin)"
+    else
+        echo "   ⚠️  Could not log in to qBittorrent API"
+    fi
+else
+    echo "   ⚠️  Could not set qBittorrent password — set manually in Web UI"
+fi
+
 # ── Summary ──
 echo ""
 echo "═══════════════════════════════════"
@@ -235,7 +254,7 @@ echo "  ────────────────────────
 echo "  Matrix:     https://matrix.$DOMAIN"
 echo "  NextCloud:  https://cloud.$DOMAIN"
 echo "  Gitea:      https://git.$DOMAIN"
-echo "  qBit:       https://torrent.$DOMAIN"
+echo "  qBit:       https://torrent.$DOMAIN (password: ${ADMIN_PASS}admin)"
 if [ "$ENABLE_ICECAST" = "y" ]; then
     echo "  Icecast:    https://radio.$DOMAIN"
 fi

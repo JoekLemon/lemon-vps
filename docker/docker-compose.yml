@@ -153,6 +153,7 @@ services:
       - WEBUI_PORT=8080
     volumes:
       - ./qbittorrent/config:/config
+      - ./qbittorrent/qBittorrent.conf:/config/qBittorrent/qBittorrent.conf
       - ${QBIT_SAVE_PATH:-/home/user/Music}:/downloads
     healthcheck:
       test: ["CMD-SHELL", "curl -fsSL http://localhost:8080 || exit 1"]
