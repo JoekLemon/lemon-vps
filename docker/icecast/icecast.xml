@@ -9,7 +9,6 @@
         <client-timeout>30</client-timeout>
         <header-timeout>15</header-timeout>
         <source-timeout>10</source-timeout>
-        <burst-on-connect>1</burst-on-connect>
         <burst-size>65535</burst-size>
     </limits>
 
@@ -29,8 +28,7 @@
     <mount>
         <mount-name>/stream</mount-name>
         <fallback-mount>/static</fallback-mount>
-        <fallback-override>1</fallback-override>
-        <fallback-secure>1</fallback-secure>
+        <fallback-override>all</fallback-override>
     </mount>
 
     <fileserve>
@@ -41,7 +39,7 @@
 
     <paths>
         <basedir>/usr/share/icecast</basedir>
-        <logdir>/var/log/icecast</logdir>
+        <logdir>/tmp</logdir>
         <webroot>/usr/share/icecast/web</webroot>
         <adminroot>/usr/share/icecast/admin</adminroot>
         <alias source="/" destination="/status.xsl"/>

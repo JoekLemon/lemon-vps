@@ -7,7 +7,7 @@ $CONFIG = array (
   'default_phone_region' => 'US',
 
   'memcache.local' => '\\OC\\Memcache\\APCu',
-  'memcache.distributed' => '\\OC\\Memcache\\Memcached',
+  'memcache.distributed' => '\\OC\\Memcache\\Redis',
 
   'filelocking.enabled' => true,
   'memcache.locking' => '\\OC\\Memcache\\Redis',
