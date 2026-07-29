@@ -23,15 +23,19 @@ git -C "$SRC_DIR" pull --ff-only || echo "   ⚠️  Git pull failed"
 
 # ── Update Docker containers ──
 echo "── Docker ──"
-cd "$SRC_DIR/docker"
+if ! command -v docker > /dev/null 2>&1 || ! docker compose version > /dev/null 2>&1; then
+    echo "   ⏭️  Docker not available"
+else
+    cd "$SRC_DIR/docker"
 
-PROFILES=$(detect_docker_profiles "$SRC_DIR/docker")
+    PROFILES=$(detect_docker_profiles "$SRC_DIR/docker")
 
-echo "   Pulling latest images..."
-docker compose $PROFILES pull
+    echo "   Pulling latest images..."
+    docker compose $PROFILES pull
 
-echo "   Restarting containers..."
-docker compose $PROFILES up -d
+    echo "   Restarting containers..."
+    docker compose $PROFILES up -d
+fi
 
 # ── Update CrowdSec ──
 echo ""
