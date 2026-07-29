@@ -23,13 +23,13 @@ fi
 
 echo "🌐 Installing NextDNS..."
 
-# Detect architecture
-ARCH=$(dpkg --print-architecture 2>/dev/null || echo "amd64")
+# Detect architecture via uname (portable across all Linux distros)
+ARCH=$(uname -m)
 case "$ARCH" in
-    amd64)  NEXTDNS_ARCH="amd64" ;;
-    arm64)  NEXTDNS_ARCH="arm64" ;;
-    armhf)  NEXTDNS_ARCH="armv7" ;;
-    *)      echo "❌ Unsupported architecture: $ARCH"; exit 1 ;;
+    x86_64) NEXTDNS_ARCH="amd64" ;;
+    aarch64) NEXTDNS_ARCH="arm64" ;;
+    armv7l)  NEXTDNS_ARCH="armv7" ;;
+    *)       echo "❌ Unsupported architecture: $ARCH"; exit 1 ;;
 esac
 
 # Get latest version from GitHub API and download .deb package
