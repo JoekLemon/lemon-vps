@@ -230,7 +230,6 @@ services:
       - canarytokens
     volumes:
       - ./canarytokens/frontend.env:/srv/frontend/frontend.env:ro
-      - ./canarytokens/switchboard.env:/srv/switchboard/switchboard.env:ro
       - ./canarytokens/uploads:/uploads/
     depends_on:
       canary-redis:
