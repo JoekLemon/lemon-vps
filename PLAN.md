@@ -4,7 +4,7 @@
 One-command VPS provisioning: `bash <(curl -s https://raw.githubusercontent.com/JoekLemon/lemon-vps/main/setup.sh)`
 
 Host services: UFW, CrowdSec, WireGuard, ClamAV, NextDNS
-Docker containers: Caddy, Matrix Synapse, NextCloud, Gitea, qBittorrent, Icecast, NTFY.sh, Forward Proxy, Canarytokens (12 total)
+Docker containers: Caddy, Matrix Synapse, NextCloud, Redis, Gitea, Gitea Runner, qBittorrent, Icecast, ICES, NTFY.sh, Forward Proxy, Canarytokens (14 total)
 
 ## Key Design Decisions
 - Subdomain model: `matrix.domain.tld`, `cloud.domain.tld`, etc.
@@ -71,7 +71,7 @@ host/
   lemon-health.service      # systemd oneshot for health check
   lemon-health.timer        # systemd timer (daily, runs lemon-health.service)
 docker/
-  docker-compose.yml, .env
+  docker-compose.yml, .env, .env.example
   caddy/Dockerfile, Caddyfile
   synapse/homeserver.yaml, homeserver.md, add-user.sh
   nextcloud/custom.config.php, Guide.md
@@ -137,4 +137,3 @@ docker/
 - `host/lemon-health.sh` + `.service` + `.timer`: systemd daily health check (06:00 ± 1h), runs smoke test and sends NTFY alert on failure
 - `scripts/upgrade.sh`: git pull + `.env` key verification vs `.env.example` + calls `update.sh`; installed as `upgrade`
 - `scripts/config.sh`: menu-driven reconfiguration (domain, passwords, services, apply); installed as `lemon-config`
-

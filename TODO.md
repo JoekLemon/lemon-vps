@@ -10,7 +10,7 @@ Integration: LinuxServer.io Docker image (`lscr.io/linuxserver/kasm`) — runs K
 Resource budget (CX42, 16 GB):
 | Component | RAM |
 |-----------|-----|
-| Existing 9 containers (idle) | ~2.5 GiB |
+| Existing 14 containers (idle) | ~2.5 GiB |
 | Kasm server services | ~1.5 GiB |
 | 2-3 workspace sessions (capped) | ~4 GiB |
 | **Total** | **~8 GiB** |
