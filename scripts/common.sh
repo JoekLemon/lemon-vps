@@ -11,15 +11,15 @@ Notes:          Source with: source "$SRC_DIR/scripts/common.sh"
 # Usage: PROFILES=$(detect_docker_profiles /path/to/docker/dir)
 detect_docker_profiles() {
     local dir="$1"
-    local profiles=""
-    cd "$dir" 2>/dev/null || { echo ""; return; }
-    if docker compose ps 2>/dev/null | grep -q "icecast"; then
-        profiles="$profiles --profile icecast"
-    fi
-    if docker compose ps 2>/dev/null | grep -q "canary"; then
-        profiles="$profiles --profile canarytokens"
-    fi
-    echo "$profiles"
+    (
+        cd "$dir" 2>/dev/null || { echo ""; exit; }
+        if docker compose ps 2>/dev/null | grep -q "icecast"; then
+            echo "--profile icecast"
+        fi
+        if docker compose ps 2>/dev/null | grep -q "canary"; then
+            echo "--profile canarytokens"
+        fi
+    ) | paste -sd " "
 }
 
 # Check a Docker container status and print formatted line.
