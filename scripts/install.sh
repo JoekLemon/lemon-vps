@@ -156,8 +156,7 @@ if [ ! -f /etc/docker/daemon.json ] || \
    ! grep -q '"dns"' /etc/docker/daemon.json 2>/dev/null || \
    ! grep -q '"max-size"' /etc/docker/daemon.json 2>/dev/null; then
     mkdir --parents /etc/docker
-    if [ -f /etc/docker/daemon.json ]; then
-        # Add dns and log-opts keys to existing config
+    if [ -f /etc/docker/daemon.json ] && command -v python3 > /dev/null 2>&1; then
         python3 -c "
 import json
 with open('/etc/docker/daemon.json') as f: cfg = json.load(f)
@@ -166,16 +165,7 @@ cfg['log-driver'] = 'json-file'
 cfg.setdefault('log-opts', {})['max-size'] = '10m'
 cfg.setdefault('log-opts', {})['max-file'] = '3'
 with open('/etc/docker/daemon.json', 'w') as f: json.dump(cfg, f, indent=2)
-" 2>/dev/null || cat > /etc/docker/daemon.json <<'JSON'
-{
-  "dns": ["9.9.9.9", "149.112.112.112"],
-  "log-driver": "json-file",
-  "log-opts": {
-    "max-size": "10m",
-    "max-file": "3"
-  }
-}
-JSON
+" 2>/dev/null || echo "   ⚠️  Failed to update daemon.json"
     else
         cat > /etc/docker/daemon.json <<'JSON'
 {
