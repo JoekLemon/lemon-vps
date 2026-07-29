@@ -115,6 +115,10 @@ collect_inputs() {
     SYNAPSE_DB_USER="synapse"
     SYNAPSE_DB_NAME="synapse"
 
+    # NextCloud database defaults
+    NEXTCLOUD_DB_USER="nextcloud"
+    NEXTCLOUD_DB_NAME="nextcloud"
+
     # ── Icecast ──
     echo ""
     echo "── Icecast ──"

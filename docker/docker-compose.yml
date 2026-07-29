@@ -61,6 +61,8 @@ services:
     image: nextcloud:${NEXTCLOUD_VERSION:-latest}
     restart: unless-stopped
     depends_on:
+      postgres:
+        condition: service_healthy
       redis:
         condition: service_started
     volumes:
@@ -76,6 +78,10 @@ services:
       - NEXTCLOUD_TRUSTED_DOMAINS=https://cloud.${DOMAIN}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - POSTGRES_HOST=postgres
+      - POSTGRES_DB=${NEXTCLOUD_DB_NAME}
+      - POSTGRES_USER=${NEXTCLOUD_DB_USER}
+      - POSTGRES_PASSWORD=${NEXTCLOUD_DB_PASSWORD}
     healthcheck:
       test: ["CMD-SHELL", "curl -fsSL http://localhost:80/status.php || exit 1"]
       interval: 30s

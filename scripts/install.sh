@@ -45,7 +45,7 @@ collect_inputs
 generate_configs "$SRC_DIR"
 
 # ── Export variables for sub-scripts ──
-export SRC_DIR DOMAIN EMAIL ADMIN_USER ADMIN_PASS MATRIX_SERVER_NAME SYNAPSE_DB_USER SYNAPSE_DB_NAME
+export SRC_DIR DOMAIN EMAIL ADMIN_USER ADMIN_PASS MATRIX_SERVER_NAME SYNAPSE_DB_USER SYNAPSE_DB_NAME NEXTCLOUD_DB_USER NEXTCLOUD_DB_NAME
 export SYSTEM_USER SYSTEM_USER_HOME SYSTEM_USER_UID SYSTEM_USER_GID
 export ENABLE_ICECAST ICECAST_SOURCE_PASS QBIT_SAVE_PATH
 export ENABLE_CROWDSEC CROWDSEC_API_KEY
@@ -181,7 +181,23 @@ fi
 
 docker compose $DOCKER_PROFILES pull
 
-echo "   Starting containers..."
+# Start postgres first so we can create the NextCloud database before
+# NextCloud container attempts auto-install on first startup
+echo "   Starting PostgreSQL..."
+docker compose $DOCKER_PROFILES up -d postgres
+
+echo "   Waiting for PostgreSQL to be ready..."
+docker compose exec -T postgres sh -c \
+    "until pg_isready -U ${SYNAPSE_DB_USER}; do sleep 2; done" > /dev/null 2>&1
+echo "   Creating NextCloud database..."
+docker compose exec -T postgres psql -U "${SYNAPSE_DB_USER}" -d postgres \
+    -c "CREATE USER ${NEXTCLOUD_DB_USER} WITH PASSWORD '${NEXTCLOUD_DB_PASSWORD}';" 2>/dev/null || true
+docker compose exec -T postgres psql -U "${SYNAPSE_DB_USER}" -d postgres \
+    -c "CREATE DATABASE ${NEXTCLOUD_DB_NAME} OWNER ${NEXTCLOUD_DB_USER};" 2>/dev/null || true
+docker compose exec -T postgres psql -U "${SYNAPSE_DB_USER}" -d postgres \
+    -c "GRANT ALL PRIVILEGES ON DATABASE ${NEXTCLOUD_DB_NAME} TO ${NEXTCLOUD_DB_USER};" 2>/dev/null || true
+
+echo "   Starting remaining containers..."
 docker compose $DOCKER_PROFILES up -d
 
 # ── Ensure WireGuard FORWARD rule is in DOCKER-USER ──
@@ -205,7 +221,11 @@ if ! docker compose exec -T nextcloud php occ status 2>/dev/null | grep -q 'inst
     docker compose exec -T nextcloud php occ maintenance:install \
         --admin-user="$ADMIN_USER" \
         --admin-pass="$ADMIN_PASS" \
-        --database=sqlite > /dev/null 2>&1 || echo "   ⚠️  NextCloud install may need manual setup"
+        --database=pgsql \
+        --database-host=postgres \
+        --database-name="${NEXTCLOUD_DB_NAME}" \
+        --database-user="${NEXTCLOUD_DB_USER}" \
+        --database-pass="${NEXTCLOUD_DB_PASSWORD}" > /dev/null 2>&1 || echo "   ⚠️  NextCloud install may need manual setup"
     docker compose exec -T nextcloud php occ config:system:set trusted_domains 1 --value="https://cloud.$DOMAIN" > /dev/null 2>&1 || true
 fi
 # Fix config.php ownership (entrypoint merges as root, PHP runs as www-data)
