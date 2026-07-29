@@ -150,25 +150,49 @@ else
     echo "   Docker Compose already installed"
 fi
 
-# Configure Docker DNS to bypass NextDNS (which may set system DNS to 10.0.0.1)
-echo "   Configuring Docker DNS..."
-if [ ! -f /etc/docker/daemon.json ] || ! grep -q '"dns"' /etc/docker/daemon.json 2>/dev/null; then
+# Configure Docker DNS and log rotation
+echo "   Configuring Docker DNS and log rotation..."
+if [ ! -f /etc/docker/daemon.json ] || \
+   ! grep -q '"dns"' /etc/docker/daemon.json 2>/dev/null || \
+   ! grep -q '"max-size"' /etc/docker/daemon.json 2>/dev/null; then
     mkdir --parents /etc/docker
     if [ -f /etc/docker/daemon.json ]; then
-        # Add dns key to existing config
+        # Add dns and log-opts keys to existing config
         python3 -c "
 import json
 with open('/etc/docker/daemon.json') as f: cfg = json.load(f)
 cfg['dns'] = ['9.9.9.9', '149.112.112.112']
+cfg['log-driver'] = 'json-file'
+cfg.setdefault('log-opts', {})['max-size'] = '10m'
+cfg.setdefault('log-opts', {})['max-file'] = '3'
 with open('/etc/docker/daemon.json', 'w') as f: json.dump(cfg, f, indent=2)
-" 2>/dev/null || echo '{"dns":["9.9.9.9","149.112.112.112"]}' > /etc/docker/daemon.json
+" 2>/dev/null || cat > /etc/docker/daemon.json <<'JSON'
+{
+  "dns": ["9.9.9.9", "149.112.112.112"],
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "10m",
+    "max-file": "3"
+  }
+}
+JSON
     else
-        echo '{"dns":["9.9.9.9","149.112.112.112"]}' > /etc/docker/daemon.json
+        cat > /etc/docker/daemon.json <<'JSON'
+{
+  "dns": ["9.9.9.9", "149.112.112.112"],
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "10m",
+    "max-file": "3"
+  }
+}
+JSON
     fi
     systemctl restart docker
     echo "   Docker DNS set to 9.9.9.9, 149.112.112.112"
+    echo "   Docker logs capped at 10 MB × 3 files per container"
 else
-    echo "   Docker DNS already configured"
+    echo "   Docker already configured"
 fi
 
 # Pull and start containers
