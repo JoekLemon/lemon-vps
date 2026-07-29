@@ -94,6 +94,11 @@ else
     echo "   ⏭️  Skipped (no profile ID)"
 fi
 
+# ── SSH hardening ──
+echo ""
+echo "── SSH Hardening ──"
+bash "$SRC_DIR/host/ssh/harden.sh"
+
 # ── Create first WireGuard peer ──
 echo ""
 echo "── WireGuard Peer ──"
@@ -295,10 +300,12 @@ else
     echo "   ⚠️  Could not set qBittorrent password — set manually in Web UI"
 fi
 
-# ── Install update command ──
-echo "   Installing update command..."
+# ── Install commands ──
+echo "   Installing commands..."
 cp "$SRC_DIR/host/update-wrapper.sh" /usr/local/bin/update
 chmod 755 /usr/local/bin/update
+cp "$SRC_DIR/host/lemon-status.sh" /usr/local/bin/lemon-status
+chmod 755 /usr/local/bin/lemon-status
 
 # ── Summary ──
 echo ""
@@ -343,7 +350,8 @@ echo "  docker/nextcloud/Guide.md    — Desktop/mobile apps, cron, performance"
 echo "  docker/gitea/Guide.md        — CI/CD workflows, runner management"
 echo "  host/crowdsec/Guide.md       — Bouncer setup, testing bans"
 echo "  docker/canarytokens/Guide.md — Token creation, NTFY alerts"
-echo "  Run 'sudo update' anytime to pull latest code and restart services"
+echo "  Run 'sudo update' to pull latest code and restart services"
+echo "  Run 'sudo lemon-status' for a quick health overview"
 echo ""
 echo "  Next steps:"
 echo "  1. Point your DNS subdomains to this VPS IP"
