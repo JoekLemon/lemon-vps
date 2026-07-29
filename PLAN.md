@@ -26,15 +26,12 @@ All 12 containers verified running with Canarytokens enabled.
 Synapse + PostgreSQL verified healthy on test VPS after fixes below.
 
 ## Known Issues / Next Steps
+See [`TODO.md`](./TODO.md) for all outstanding issues and feature work.
+
 1. Verify all HTTPS routes accessible via Caddy
 2. Test CrowdSec: confirm Caddy access log parsing, bouncer active
 3. Consider: system user docker group, sudoers config
 4. Nextcloud: requires web-based setup on first boot (503 until completed)
-5. **Icecast GUI unstyled**: `<fileserve>` block missing `<enabled>1</enabled>` — static assets (CSS, images, favicon) return 404. Fix in `docker/icecast/icecast.xml` and recreate container.
-6. **Placeholder substitution**: `generate-configs.sh` fails to substitute many `{{PLACEHOLDER}}` values in `.env` (e.g. `DOMAIN`, `ADMIN_USER`, `ADMIN_PASS`). After fixing `.env`, affected services need config regeneration and container recreation.
-7. **Nextcloud external storage / local mount**: Files uploaded to Nextcloud should appear on the host filesystem under `/home/lemon/{Documents,Music,Videos,Pictures}` so they're accessible via SSH. Approaches: Nextcloud external storage config pointing to bind-mounted host dirs, or symlink-based approaches. Requires mapping these host dirs into the Nextcloud container and configuring the `datadirectory` or external storage.
-8. **qBittorrent output to user home dirs**: qBittorrent should be able to save downloads to `/home/lemon/{Downloads,Music,Videos,Documents}` so torrented files are accessible on the host filesystem. Requires mounting the user's home directories into the qBittorrent container and configuring `SavePath` and `TempPath` accordingly.
-9. **Gitea runner test workflow**: Create a `.gitea/workflows/test.yml` that runs on push and exercises the Gitea Actions runner (e.g. checkout, lint, build, or simple echo/status check) to verify the runner is functioning correctly.
 
 ## File Structure
 ```
