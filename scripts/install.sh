@@ -275,7 +275,9 @@ sleep 5
 RUNNER_TOKEN=$(docker compose exec -T -u git gitea gitea actions generate-runner-token 2>/dev/null) || true
 
 if [ -n "$RUNNER_TOKEN" ]; then
-    echo "GITEA_RUNNER_REGISTRATION_TOKEN=$RUNNER_TOKEN" >> "$SRC_DIR/docker/.env"
+    if ! grep -q "^GITEA_RUNNER_REGISTRATION_TOKEN=" "$SRC_DIR/docker/.env" 2>/dev/null; then
+        echo "GITEA_RUNNER_REGISTRATION_TOKEN=$RUNNER_TOKEN" >> "$SRC_DIR/docker/.env"
+    fi
     docker compose up -d --force-recreate gitea-runner > /dev/null 2>&1 || echo "   ⚠️  Runner registration may need manual setup"
 else
     echo "   ⚠️  Could not register runner — do it manually from Gitea UI"
