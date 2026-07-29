@@ -33,6 +33,7 @@ Synapse + PostgreSQL verified healthy on test VPS after fixes below.
 5. **Icecast GUI unstyled**: `<fileserve>` block missing `<enabled>1</enabled>` — static assets (CSS, images, favicon) return 404. Fix in `docker/icecast/icecast.xml` and recreate container.
 6. **Placeholder substitution**: `generate-configs.sh` fails to substitute many `{{PLACEHOLDER}}` values in `.env` (e.g. `DOMAIN`, `ADMIN_USER`, `ADMIN_PASS`). After fixing `.env`, affected services need config regeneration and container recreation.
 7. **Nextcloud external storage / local mount**: Files uploaded to Nextcloud should appear on the host filesystem under `/home/lemon/{Documents,Music,Videos,Pictures}` so they're accessible via SSH. Approaches: Nextcloud external storage config pointing to bind-mounted host dirs, or symlink-based approaches. Requires mapping these host dirs into the Nextcloud container and configuring the `datadirectory` or external storage.
+8. **qBittorrent output to user home dirs**: qBittorrent should be able to save downloads to `/home/lemon/{Downloads,Music,Videos,Documents}` so torrented files are accessible on the host filesystem. Requires mounting the user's home directories into the qBittorrent container and configuring `SavePath` and `TempPath` accordingly.
 
 ## File Structure
 ```
