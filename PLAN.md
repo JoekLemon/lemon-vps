@@ -51,10 +51,12 @@ host/
     lemon-clamonacc.service, lemon-clamscan.service, lemon-clamscan.timer, lemon-clamav-logrotate.service
   nextdns/install.sh
   ssh/harden.sh             # Disables password auth, sets key-only root login, timeouts
-  update-wrapper.sh         # Installed to /usr/local/bin/update
+  update-wrapper.sh         # Thin wrapper installed to /usr/local/bin/update
+  lemon-status-wrapper.sh   # Thin wrapper installed to /usr/local/bin/lemon-status
+  lemon-smoke-wrapper.sh    # Thin wrapper installed to /usr/local/bin/lemon-smoke
   uninstall.sh              # Tears down Docker, systemd units, config files, repo
-  lemon-status.sh           # Health overview, installed to /usr/local/bin/lemon-status
-  smoke-test.sh             # Post-deploy smoke test, installed to /usr/local/bin/lemon-smoke
+  lemon-status.sh           # Health overview (called via wrapper)
+  smoke-test.sh             # Post-deploy smoke test (called via wrapper)
 docker/
   docker-compose.yml, .env
   caddy/Dockerfile, Caddyfile
@@ -110,4 +112,10 @@ docker/
 - `generate-configs.sh`: replaced inline apt/dnf/yum with `pkg_install`
 - Docker log rotation: `daemon.json` now sets `max-size=10m, max-file=3`
 - `host/smoke-test.sh`: full post-deploy verification (containers, HTTPS, TLS certs, services)
+- Wrappers for `/usr/local/bin/` commands: `update-wrapper.sh`, `lemon-status-wrapper.sh`, `lemon-smoke-wrapper.sh` — installed to `/usr/local/bin/`, exec real scripts from `/opt/lemon-vps`
+- `daemon.json` Python fallback: guarded with `command -v python3` — no longer silently overwrites existing config on failure
+- `update.sh`: Docker section guarded — skips with message if Docker unavailable instead of aborting
+- `smoke-test.sh`: added `-connect_timeout 5` to `openssl s_client`, curl availability check for HTTPS section
+- `generate-configs.sh`: `pkg_install openssl` ensures required tool before 5x `openssl rand` calls
+- `install.sh` export block: documented `SYNAPSE_DB_PASSWORD`, `NEXTCLOUD_DB_PASSWORD`, `MATRIX_SECRET_KEY`, `GITEA_SECRET_KEY`
 
