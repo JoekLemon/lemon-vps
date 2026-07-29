@@ -14,13 +14,7 @@ generate_configs() {
 
     # Generate WireGuard tools (needed for add-peer.sh later)
     echo "   Installing WireGuard tools..."
-    if command -v apt > /dev/null 2>&1; then
-        apt install --yes --quiet wireguard-tools > /dev/null 2>&1
-    elif command -v dnf > /dev/null 2>&1; then
-        dnf install --yes wireguard-tools > /dev/null 2>&1
-    elif command -v yum > /dev/null 2>&1; then
-        yum install --yes wireguard-tools > /dev/null 2>&1
-    fi
+    pkg_install wireguard-tools
 
     # Generate Matrix signing key
     echo "   Generating Matrix signing key..."
