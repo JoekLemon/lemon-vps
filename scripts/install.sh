@@ -212,6 +212,7 @@ fi
 echo "   Setting up NTFY authentication..."
 sleep 3
 printf '%s\n%s\n' "$ADMIN_PASS" "$ADMIN_PASS" | docker compose exec -T ntfy ntfy user add --role admin "$ADMIN_USER" > /dev/null 2>&1 || echo "   ⚠️  NTFY user creation may need manual setup"
+docker compose exec -T ntfy ntfy token add "$ADMIN_USER" "$NTFY_TOKEN" > /dev/null 2>&1 || echo "   ⚠️  NTFY token registration may need manual setup"
 
 # ── Install NextCloud if not auto-installed ──
 echo "   Checking NextCloud installation..."
