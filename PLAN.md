@@ -22,13 +22,13 @@ Docker containers: Caddy, Matrix Synapse, NextCloud, Gitea, qBittorrent, Icecast
 - Gitea runner: auto-registers via `GITEA_RUNNER_REGISTRATION_TOKEN` env var, persisted in named Docker volume
 
 ## Status
-See [`TODO.md`](./TODO.md) for completed items and upcoming work.
+All planned bug fixes and features are complete. See [`TODO.md`](./TODO.md) for the single remaining item (Kasm).
 
 ### Next Steps
-1. Verify all HTTPS routes accessible via Caddy
+1. Verify all HTTPS routes accessible via Caddy after install
 2. Test CrowdSec: confirm Caddy access log parsing, bouncer active
-3. Consider: system user docker group, sudoers config
-4. Nextcloud: requires web-based setup on first boot (503 until completed)
+3. Run `sudo lemon-status` for health overview
+4. Run `sudo update` to pull latest code and restart services
 
 ## File Structure
 ```
@@ -39,6 +39,7 @@ scripts/
   prompts.sh                # User input
   generate-configs.sh       # Template replacement (Matrix key, NTFY token, VPS IP, DB pass)
   update.sh                 # Re-pull images, restart
+  common.sh                 # Shared functions (detect_docker_profiles, check_docker_svc, etc.)
 host/
   ufw/install.sh, rules.sh
   crowdsec/install.sh, acquis.yaml, Guide.md
@@ -49,6 +50,10 @@ host/
     scripts/logrotate.sh
     lemon-clamonacc.service, lemon-clamscan.service, lemon-clamscan.timer, lemon-clamav-logrotate.service
   nextdns/install.sh
+  ssh/harden.sh             # Disables password auth, sets key-only root login, timeouts
+  update-wrapper.sh         # Installed to /usr/local/bin/update
+  uninstall.sh              # Tears down Docker, systemd units, config files, repo
+  lemon-status.sh           # Health overview, installed to /usr/local/bin/lemon-status
 docker/
   docker-compose.yml, .env
   caddy/Dockerfile, Caddyfile
@@ -93,4 +98,13 @@ docker/
 - NTFY setup: `sleep 3` → healthcheck wait loop
 - `wg syncconf`: kernel-version fallback to `wg setconf` for pre-5.6 kernels
 - Canarytokens frontend: no longer mounts `switchboard.env`
+- `scripts/common.sh`: shared functions for profile detection, Docker/systemd checks, sshd config
+- `host/uninstall.sh`: full teardown with prompts for volumes and packages
+- `host/lemon-status.sh`: `sudo lemon-status` health overview
+- `host/ssh/harden.sh`: SSH hardening with backup and prompt
+- `update-wrapper.sh`: `/usr/local/bin/update` wrapper installed by install.sh
+- `crowdsec/install.sh`, `clamav/install.sh`, `ufw/install.sh`: added `set -o errexit`
+- `detect_docker_profiles()`: wrapped in subshell to avoid caller CWD side-effect
+- `install.sh`: `GITEA_RUNNER_REGISTRATION_TOKEN` dedup (re-run safety)
+- `generate-configs.sh`: replaced inline apt/dnf/yum with `pkg_install`
 
