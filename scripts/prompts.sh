@@ -93,9 +93,17 @@ collect_inputs() {
     SYSTEM_USER_UID="$(id --user "$SYSTEM_USER")"
     SYSTEM_USER_GID="$(id --group "$SYSTEM_USER")"
 
-    # Create Music directory
+    # Create user directories (shared with NextCloud and qBittorrent)
+    mkdir --parents "$SYSTEM_USER_HOME/Downloads"
+    mkdir --parents "$SYSTEM_USER_HOME/Documents"
     mkdir --parents "$SYSTEM_USER_HOME/Music"
-    chown "$SYSTEM_USER:$SYSTEM_USER" "$SYSTEM_USER_HOME/Music"
+    mkdir --parents "$SYSTEM_USER_HOME/Videos"
+    mkdir --parents "$SYSTEM_USER_HOME/Pictures"
+    chown "$SYSTEM_USER:$SYSTEM_USER" "$SYSTEM_USER_HOME/Downloads" \
+        "$SYSTEM_USER_HOME/Documents" \
+        "$SYSTEM_USER_HOME/Music" \
+        "$SYSTEM_USER_HOME/Videos" \
+        "$SYSTEM_USER_HOME/Pictures"
 
     echo "   Home: $SYSTEM_USER_HOME"
     echo "   UID:GID = $SYSTEM_USER_UID:$SYSTEM_USER_GID"
@@ -120,7 +128,7 @@ collect_inputs() {
     # ── qBittorrent ──
     echo ""
     echo "── qBittorrent ──"
-    prompt_input "Download path" "$SYSTEM_USER_HOME/Music" QBIT_SAVE_PATH
+    prompt_input "Download path (also used as Icecast music library)" "$SYSTEM_USER_HOME/Music" QBIT_SAVE_PATH
 
     # ── NTFY.sh ──
     echo ""

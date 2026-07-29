@@ -212,6 +212,35 @@ fi
 docker compose exec -T nextcloud chown www-data:www-data /var/www/html/config/config.php 2>/dev/null || true
 docker compose exec -T nextcloud chmod 640 /var/www/html/config/config.php 2>/dev/null || true
 
+# ── Configure NextCloud External Storage (user home directories) ──
+echo "   Configuring NextCloud external storage..."
+if command -v setfacl > /dev/null 2>&1 || pkg_install acl > /dev/null 2>&1; then
+    # Grant www-data (UID 33, NextCloud container user) access to user dirs
+    setfacl -R -m u:33:rwx "$SYSTEM_USER_HOME/Documents" \
+        "$SYSTEM_USER_HOME/Music" \
+        "$SYSTEM_USER_HOME/Videos" \
+        "$SYSTEM_USER_HOME/Pictures"
+    setfacl -R -d -m u:33:rwx "$SYSTEM_USER_HOME/Documents" \
+        "$SYSTEM_USER_HOME/Music" \
+        "$SYSTEM_USER_HOME/Videos" \
+        "$SYSTEM_USER_HOME/Pictures"
+    echo "   ACLs set for www-data on user directories"
+
+    # Enable files_external app
+    docker compose exec -T nextcloud php occ app:enable files_external > /dev/null 2>&1 || true
+
+    # Create external storage mounts
+    for dir in Documents Music Videos Pictures; do
+        docker compose exec -T nextcloud php occ files_external:create \
+            "$dir" local null::null \
+            -c datadir="/mnt/user-data/$dir" > /dev/null 2>&1 || \
+            echo "   ⚠️  Could not create external storage for $dir"
+    done
+    echo "   ✅ External storage configured for Documents, Music, Videos, Pictures"
+else
+    echo "   ⚠️  acl package not available — skipping external storage setup"
+fi
+
 # ── Register Gitea runner ──
 echo "   Registering Gitea runner..."
 sleep 5

@@ -66,6 +66,10 @@ services:
     volumes:
       - ./nextcloud/data:/var/www/html
       - ./nextcloud/custom.config.php:/var/www/html/config/custom.config.php:ro
+      - ${SYSTEM_USER_HOME}/Documents:/mnt/user-data/Documents:rw
+      - ${SYSTEM_USER_HOME}/Music:/mnt/user-data/Music:rw
+      - ${SYSTEM_USER_HOME}/Videos:/mnt/user-data/Videos:rw
+      - ${SYSTEM_USER_HOME}/Pictures:/mnt/user-data/Pictures:rw
     environment:
       - NEXTCLOUD_ADMIN_USER=${ADMIN_USER}
       - NEXTCLOUD_ADMIN_PASSWORD=${ADMIN_PASS}
@@ -168,7 +172,11 @@ services:
     volumes:
       - ./qbittorrent/config:/config
       - ./qbittorrent/qBittorrent.conf:/config/qBittorrent/qBittorrent.conf
-      - ${QBIT_SAVE_PATH:-/home/user/Music}:/downloads
+      - ${QBIT_SAVE_PATH:-/home/lemon/Music}:/downloads
+      - ${SYSTEM_USER_HOME}/Documents:/user/Documents:rw
+      - ${SYSTEM_USER_HOME}/Videos:/user/Videos:rw
+      - ${SYSTEM_USER_HOME}/Pictures:/user/Pictures:rw
+      - ${SYSTEM_USER_HOME}/Downloads:/user/Downloads:rw
     healthcheck:
       test: ["CMD-SHELL", "curl -fsSL http://localhost:8080 || exit 1"]
       interval: 30s

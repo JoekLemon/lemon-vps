@@ -22,16 +22,17 @@ Docker containers: Caddy, Matrix Synapse, NextCloud, Gitea, qBittorrent, Icecast
 - Gitea runner: auto-registers via `GITEA_RUNNER_REGISTRATION_TOKEN` env var, persisted in named Docker volume
 
 ## Status
-All 12 containers verified running with Canarytokens enabled.
-Synapse + PostgreSQL verified healthy on test VPS after fixes below.
+See [`TODO.md`](./TODO.md) for all outstanding bugs and feature work.
 
-## Known Issues / Next Steps
-See [`TODO.md`](./TODO.md) for all outstanding issues and feature work.
-
-1. Verify all HTTPS routes accessible via Caddy
-2. Test CrowdSec: confirm Caddy access log parsing, bouncer active
-3. Consider: system user docker group, sudoers config
-4. Nextcloud: requires web-based setup on first boot (503 until completed)
+### Next Steps
+1. Fix critical `.env` hardcoding bug (ICECAST_SOURCE_PASS, QBIT_SAVE_PATH)
+2. Fix ClamAV logrotate service name
+3. Fix Caddy proxy auth when disabled
+4. Update CrowdSec Guide.md bouncer references
+5. Verify all HTTPS routes accessible via Caddy
+6. Test CrowdSec: confirm Caddy access log parsing, bouncer active
+7. Consider: system user docker group, sudoers config
+8. Nextcloud: requires web-based setup on first boot (503 until completed)
 
 ## File Structure
 ```
@@ -46,19 +47,24 @@ host/
   ufw/install.sh, rules.sh
   crowdsec/install.sh, acquis.yaml, Guide.md
   wireguard/install.sh, add-peer.sh, Guide.md
-  clamav/install.sh, lemon-*.service/.timer
+  clamav/
+    install.sh
+    config/clamd.conf, clamonacc_logrotate.conf, clamscan_logrotate.conf
+    scripts/logrotate.sh
+    lemon-clamonacc.service, lemon-clamscan.service, lemon-clamscan.timer, lemon-clamav-logrotate.service
   nextdns/install.sh
 docker/
   docker-compose.yml, .env
   caddy/Dockerfile, Caddyfile
   synapse/homeserver.yaml, homeserver.md, add-user.sh
-  nextcloud/custom.config.php
+  nextcloud/custom.config.php, Guide.md
   gitea/app.ini, Guide.md
   gitea-runner/config.yaml
   qbittorrent/qBittorrent.conf
   icecast/icecast.xml
+  ices/Dockerfile, stream.sh
   ntfy/config/server.yml
-  canarytokens/frontend.env, switchboard.env
+  canarytokens/frontend.env, switchboard.env, Guide.md
 ```
 
 ## Critical Fixes to Remember
@@ -73,6 +79,9 @@ docker/
 - Gitea runner persistence: named `gitea-runner-data` volume stores `.runner` file
 - CrowdSec bouncer: `crowdsec-firewall-bouncer-iptables` on Debian 13
 - Docker DNS: system DNS (`10.0.0.1`) breaks container resolution — `daemon.json` with Quad9
+- `.env` must use `{{PLACEHOLDER}}` syntax for any value that `sed_fill` should replace (hardcoded values silently ignored)
+- ClamAV logrotate: signal target must use `lemon-` prefixed service names
+- Caddyfile `basic_auth` must be omitted entirely when `PROXY_AUTH=n` (empty credentials break Caddy)
 
 ## Backlog
 
