@@ -25,7 +25,7 @@ Docker containers: Caddy, Matrix Synapse, NextCloud, Gitea, qBittorrent, Icecast
 All planned bug fixes and features are complete. See [`TODO.md`](./TODO.md) for the single remaining item (Kasm).
 
 ### Next Steps
-1. Verify all HTTPS routes accessible via Caddy after install
+1. Run `sudo lemon-smoke` for a full post-deploy smoke test (containers, HTTPS, TLS certs, services)
 2. Test CrowdSec: confirm Caddy access log parsing, bouncer active
 3. Run `sudo lemon-status` for health overview
 4. Run `sudo update` to pull latest code and restart services
@@ -54,6 +54,7 @@ host/
   update-wrapper.sh         # Installed to /usr/local/bin/update
   uninstall.sh              # Tears down Docker, systemd units, config files, repo
   lemon-status.sh           # Health overview, installed to /usr/local/bin/lemon-status
+  smoke-test.sh             # Post-deploy smoke test, installed to /usr/local/bin/lemon-smoke
 docker/
   docker-compose.yml, .env
   caddy/Dockerfile, Caddyfile
@@ -107,4 +108,6 @@ docker/
 - `detect_docker_profiles()`: wrapped in subshell to avoid caller CWD side-effect
 - `install.sh`: `GITEA_RUNNER_REGISTRATION_TOKEN` dedup (re-run safety)
 - `generate-configs.sh`: replaced inline apt/dnf/yum with `pkg_install`
+- Docker log rotation: `daemon.json` now sets `max-size=10m, max-file=3`
+- `host/smoke-test.sh`: full post-deploy verification (containers, HTTPS, TLS certs, services)
 
