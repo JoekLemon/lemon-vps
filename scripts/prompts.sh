@@ -30,7 +30,7 @@ prompt_input() {
         fi
     fi
 
-    eval "$var_name='$value'"
+    printf -v "$var_name" '%s' "$value"
 }
 
 prompt_yes_no() {
@@ -48,7 +48,7 @@ prompt_yes_no() {
         value="${value:-n}"
     fi
 
-    eval "$var_name='$value'"
+    printf -v "$var_name" '%s' "$value"
 }
 
 collect_inputs() {
@@ -89,7 +89,7 @@ collect_inputs() {
     fi
 
     # Set variables based on system user
-    SYSTEM_USER_HOME="$(eval echo ~"$SYSTEM_USER")"
+    SYSTEM_USER_HOME="$(getent passwd "$SYSTEM_USER" | cut -d: -f6)"
     SYSTEM_USER_UID="$(id --user "$SYSTEM_USER")"
     SYSTEM_USER_GID="$(id --group "$SYSTEM_USER")"
 
