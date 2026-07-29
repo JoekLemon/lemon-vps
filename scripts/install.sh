@@ -327,6 +327,8 @@ cp "$SRC_DIR/host/lemon-status-wrapper.sh" /usr/local/bin/lemon-status
 chmod 755 /usr/local/bin/lemon-status
 cp "$SRC_DIR/host/lemon-smoke-wrapper.sh" /usr/local/bin/lemon-smoke
 chmod 755 /usr/local/bin/lemon-smoke
+cp "$SRC_DIR/host/notify-wrapper.sh" /usr/local/bin/lemon-notify
+chmod 755 /usr/local/bin/lemon-notify
 
 # ── Smoke test ──
 echo "   Running smoke test..."
@@ -373,11 +375,13 @@ echo "  ────────────────────────
 echo "  host/wireguard/Guide.md      — Add devices, split tunnel, troubleshooting"
 echo "  docker/nextcloud/Guide.md    — Desktop/mobile apps, cron, performance"
 echo "  docker/gitea/Guide.md        — CI/CD workflows, runner management"
-echo "  host/crowdsec/Guide.md       — Bouncer setup, testing bans"
-echo "  docker/canarytokens/Guide.md — Token creation, NTFY alerts"
+  echo "  host/crowdsec/Guide.md       — Bouncer setup, testing bans"
+  echo "  docker/canarytokens/Guide.md — Token creation, NTFY alerts"
+  echo "  docker/ntfy/Guide.md         — Push notifications, curl examples"
   echo "  Run 'sudo update' to pull latest code and restart services"
   echo "  Run 'sudo lemon-status' for a quick health overview"
   echo "  Run 'sudo lemon-smoke' for a full smoke test"
+  echo "  Run 'sudo lemon-notify <msg>' to send a push notification"
 echo ""
 echo "  Next steps:"
 echo "  1. Point your DNS subdomains to this VPS IP"

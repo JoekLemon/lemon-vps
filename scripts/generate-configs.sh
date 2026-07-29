@@ -93,6 +93,7 @@ generate_configs() {
     sed_fill "$src_dir/docker/gitea/app.ini"
     sed_fill "$src_dir/docker/qbittorrent/qBittorrent.conf"
     sed_fill "$src_dir/docker/ntfy/config/server.yml"
+    sed_fill "$src_dir/docker/ntfy/Guide.md"
 
     # Icecast config (conditional)
     if [ "$ENABLE_ICECAST" = "y" ]; then
