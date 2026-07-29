@@ -80,7 +80,7 @@ docker/
 - CrowdSec bouncer: `crowdsec-firewall-bouncer-iptables` on Debian 13
 - Docker DNS: system DNS (`10.0.0.1`) breaks container resolution — `daemon.json` with Quad9
 - ~~`.env` must use `{{PLACEHOLDER}}` syntax for any value that `sed_fill` should replace~~ (fixed — `ICECAST_SOURCE_PASS` and `QBIT_SAVE_PATH` now use placeholders)
-- ClamAV logrotate: signal target must use `lemon-` prefixed service names
+- ~~ClamAV logrotate: signal target must use `lemon-` prefixed service names~~ (fixed — `clamav-clamonacc.service` → `lemon-clamonacc.service`)
 - Caddyfile `basic_auth` must be omitted entirely when `PROXY_AUTH=n` (empty credentials break Caddy)
 
 ## Backlog
