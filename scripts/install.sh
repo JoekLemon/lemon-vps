@@ -330,9 +330,9 @@ fi
 echo "   Installing commands..."
 cp "$SRC_DIR/host/update-wrapper.sh" /usr/local/bin/update
 chmod 755 /usr/local/bin/update
-cp "$SRC_DIR/host/lemon-status.sh" /usr/local/bin/lemon-status
+cp "$SRC_DIR/host/lemon-status-wrapper.sh" /usr/local/bin/lemon-status
 chmod 755 /usr/local/bin/lemon-status
-cp "$SRC_DIR/host/smoke-test.sh" /usr/local/bin/lemon-smoke
+cp "$SRC_DIR/host/lemon-smoke-wrapper.sh" /usr/local/bin/lemon-smoke
 chmod 755 /usr/local/bin/lemon-smoke
 
 # ── Smoke test ──
