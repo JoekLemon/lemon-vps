@@ -121,7 +121,13 @@ chmod 600 "$CLIENT_CONF"
 
 # Apply live (no restart needed)
 echo "   Applying configuration..."
-wg syncconf wg0 <(wg-quick strip wg0)
+KERNEL_MAJOR=$(uname -r | cut -d. -f1)
+KERNEL_MINOR=$(uname -r | cut -d. -f2)
+if [ "$KERNEL_MAJOR" -gt 5 ] || { [ "$KERNEL_MAJOR" -eq 5 ] && [ "$KERNEL_MINOR" -ge 6 ]; }; then
+    wg syncconf wg0 <(wg-quick strip wg0)
+else
+    wg setconf wg0 /etc/wireguard/wg0.conf
+fi
 
 echo ""
 echo "✅ Peer '${PEER_NAME}' created"
