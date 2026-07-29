@@ -295,6 +295,11 @@ else
     echo "   ⚠️  Could not set qBittorrent password — set manually in Web UI"
 fi
 
+# ── Install update command ──
+echo "   Installing update command..."
+cp "$SRC_DIR/host/update-wrapper.sh" /usr/local/bin/update
+chmod 755 /usr/local/bin/update
+
 # ── Summary ──
 echo ""
 echo "═══════════════════════════════════"
@@ -338,6 +343,7 @@ echo "  docker/nextcloud/Guide.md    — Desktop/mobile apps, cron, performance"
 echo "  docker/gitea/Guide.md        — CI/CD workflows, runner management"
 echo "  host/crowdsec/Guide.md       — Bouncer setup, testing bans"
 echo "  docker/canarytokens/Guide.md — Token creation, NTFY alerts"
+echo "  Run 'sudo update' anytime to pull latest code and restart services"
 echo ""
 echo "  Next steps:"
 echo "  1. Point your DNS subdomains to this VPS IP"
