@@ -22,7 +22,7 @@ Docker containers: Caddy, Matrix Synapse, NextCloud, Gitea, qBittorrent, Icecast
 - Gitea runner: auto-registers via `GITEA_RUNNER_REGISTRATION_TOKEN` env var, persisted in named Docker volume
 
 ## Status
-All items in [`TODO.md`](./TODO.md) are resolved.
+See [`TODO.md`](./TODO.md) for completed items and upcoming work.
 
 ### Next Steps
 1. Verify all HTTPS routes accessible via Caddy
@@ -94,31 +94,3 @@ docker/
 - `wg syncconf`: kernel-version fallback to `wg setconf` for pre-5.6 kernels
 - Canarytokens frontend: no longer mounts `switchboard.env`
 
-## Backlog
-
-### Kasm Workspaces (containerized desktop streaming)
-**Status**: Planned, not implemented. Requires VPS upgrade to CX42 (16 GB, 8 vCPU) or similar.
-
-**Integration approach**: LinuxServer.io Docker image (`lscr.io/linuxserver/kasm`) — runs Kasm in Docker-in-Docker, avoids official installer.
-
-**Resource budget** (CX42, 16 GB):
-| Component | RAM |
-|-----------|-----|
-| Existing 9 containers (idle) | ~2.5 GiB |
-| Kasm server services | ~1.5 GiB |
-| 2-3 workspace sessions (capped) | ~4 GiB |
-| **Total** | **~8 GiB** |
-
-**Implementation checklist**:
-- [ ] `docker/docker-compose.yml`: add `kasm` service (privileged, `--profile kasm`, maps 4443:443)
-- [ ] `docker/caddy/Caddyfile`: add `kasm.{{DOMAIN}}` → `kasm:443` (with `tls_insecure_skip_verify`)
-- [ ] `docker/.env`: add `KASM_VERSION=latest`
-- [ ] `scripts/prompts.sh`: add `ENABLE_KASM` prompt
-- [ ] `scripts/install.sh`: conditional swap (8 GiB file), sysctl `vm.max_map_count=262144`, `--profile kasm`
-- [ ] Post-install: cap workspace images to 1.5 GiB / 1 CPU via Admin UI
-
-**Constraints**:
-- Community Edition caps at 5 concurrent sessions
-- Privileged container required (Docker-in-Docker)
-- Each workspace session defaults to 2.8 GiB / 2 cores — must lower in Admin UI
-- Requires 8+ GiB swap for stability

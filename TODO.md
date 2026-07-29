@@ -1,22 +1,45 @@
 # TODO
 
-All items resolved. See commit log below.
+## In Progress / Upcoming
+
+### Kasm Workspaces (containerized desktop streaming)
+Requires VPS upgrade to CX42 (16 GB, 8 vCPU) or similar.
+
+Integration: LinuxServer.io Docker image (`lscr.io/linuxserver/kasm`) — runs Kasm in Docker-in-Docker, avoids official installer.
+
+Resource budget (CX42, 16 GB):
+| Component | RAM |
+|-----------|-----|
+| Existing 9 containers (idle) | ~2.5 GiB |
+| Kasm server services | ~1.5 GiB |
+| 2-3 workspace sessions (capped) | ~4 GiB |
+| **Total** | **~8 GiB** |
+
+- [ ] `docker/docker-compose.yml`: add `kasm` service (privileged, `--profile kasm`, maps 4443:443)
+- [ ] `docker/caddy/Caddyfile`: add `kasm.{{DOMAIN}}` → `kasm:443` (with `tls_insecure_skip_verify`)
+- [ ] `docker/.env`: add `KASM_VERSION=latest`
+- [ ] `scripts/prompts.sh`: add `ENABLE_KASM` prompt
+- [ ] `scripts/install.sh`: conditional swap (8 GiB file), sysctl `vm.max_map_count=262144`, `--profile kasm`
+- [ ] Post-install: cap workspace images to 1.5 GiB / 1 CPU via Admin UI
+
+**Constraints**:
+- Community Edition caps at 5 concurrent sessions
+- Privileged container required (Docker-in-Docker)
+- Each workspace session defaults to 2.8 GiB / 2 cores — must lower in Admin UI
+- Requires 8+ GiB swap for stability
 
 ## Completed
 
 ### Critical
-
 - [x] **`.env` hardcodes `ICECAST_SOURCE_PASS` and `QBIT_SAVE_PATH`**: Changed to `{{PLACEHOLDER}}` syntax in `docker/.env` so `sed_fill` picks them up.
 - [x] **ClamAV logrotate wrong service name**: `host/clamav/config/clamonacc_logrotate.conf` — `clamav-clamonacc.service` → `lemon-clamonacc.service`.
 - [x] **Caddy proxy auth breaks when auth disabled**: `generate-configs.sh` deletes `basic_auth` line from Caddyfile when `PROXY_AUTH != "y"`.
 
 ### High
-
 - [x] **CrowdSec Guide references wrong bouncer**: `ufw` → `iptables` in `host/crowdsec/Guide.md`.
 - [x] **Icecast GUI unstyled**: Added `<enabled>1</enabled>` to `<fileserve>` in `docker/icecast/icecast.xml`.
 
 ### Medium
-
 - [x] **`update.sh` ignores Docker profiles**: Detects running icecast/canary containers and adds `--profile` flags.
 - [x] **NextCloud uses SQLite**: Migrated to PostgreSQL — `install.sh` creates DB/user, `occ` uses `--database=pgsql`.
 - [x] **Shared `MATRIX_SECRET_KEY` across Synapse and Gitea**: Generated unique `GITEA_SECRET_KEY` for Gitea.
@@ -25,7 +48,6 @@ All items resolved. See commit log below.
 - [x] **`apt update` runs on every `pkg_install` call**: Guard variable `_pkg_updated` prevents redundant updates.
 
 ### Low
-
 - [x] **`eval` injection risk in `prompts.sh`**: `eval` → `printf -v` / `getent passwd`.
 - [x] **`logrotate.sh` runs `sudo` as root**: Removed `sudo` — runs as root via systemd.
 - [x] **`NTFY_TOKEN` generated but never registered**: Added `ntfy token add` after user creation.
@@ -37,7 +59,6 @@ All items resolved. See commit log below.
 - [x] **`canary-frontend` mounts `switchboard.env` unnecessarily**: Removed extra mount from `docker-compose.yml`.
 
 ### Previously resolved
-
 - [x] **NextCloud external storage / local mount**: Files appear on host under `/home/lemon/{Documents,Music,Videos,Pictures}`.
 - [x] **qBittorrent output to user home dirs**: All user dirs mounted into container. Default `SavePath` fixed.
 - [x] **Gitea runner test workflow**: Documented inline in `docker/gitea/Guide.md`.
