@@ -52,6 +52,6 @@ fi
 echo ""
 echo "── System ──"
 echo "  Uptime: $(uptime -p | sed 's/up //')"
-echo "  Load:   $(cat /proc/loadavg | awk '{print $1, $2, $3}')"
+  echo "  Load:   $(awk '{print $1, $2, $3}' /proc/loadavg)"
 echo "  Memory: $(free -h | awk '/Mem:/ {print $3 " / " $2}')"
 echo "  Disk:   $(df -h / | awk 'NR==2 {print $5 " used (" $3 " / " $2 ")"}')"
