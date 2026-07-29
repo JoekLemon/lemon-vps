@@ -28,7 +28,11 @@ All planned bug fixes and features are complete. See [`TODO.md`](./TODO.md) for 
 1. Run `sudo lemon-smoke` for a full post-deploy smoke test (containers, HTTPS, TLS certs, services)
 2. Test CrowdSec: confirm Caddy access log parsing, bouncer active
 3. Run `sudo lemon-status` for health overview
-4. Run `sudo update` to pull latest code and restart services
+4. Run `sudo update` to refresh containers and definitions (no code change)
+5. Run `sudo upgrade` to pull latest code, then update everything
+6. Run `sudo lemon-config` to reconfigure services post-install
+7. Run `sudo lemon-notify "test"` to verify push notifications
+8. Check `sudo systemctl status lemon-health.timer` for daily health checks
 
 ## File Structure
 ```
@@ -38,7 +42,9 @@ scripts/
   detect-os.sh              # OS detection, pkg helpers
   prompts.sh                # User input
   generate-configs.sh       # Template replacement (Matrix key, NTFY token, VPS IP, DB pass)
-  update.sh                 # Re-pull images, restart
+  update.sh                 # Refresh containers and definitions (no code change)
+  upgrade.sh                # git pull + .env key check + update
+  config.sh                 # Interactive post-install reconfiguration
   common.sh                 # Shared functions (detect_docker_profiles, check_docker_svc, etc.)
 host/
   ufw/install.sh, rules.sh
@@ -52,11 +58,18 @@ host/
   nextdns/install.sh
   ssh/harden.sh             # Disables password auth, sets key-only root login, timeouts
   update-wrapper.sh         # Thin wrapper installed to /usr/local/bin/update
+  upgrade-wrapper.sh        # Thin wrapper installed to /usr/local/bin/upgrade
   lemon-status-wrapper.sh   # Thin wrapper installed to /usr/local/bin/lemon-status
   lemon-smoke-wrapper.sh    # Thin wrapper installed to /usr/local/bin/lemon-smoke
+  notify-wrapper.sh         # Thin wrapper installed to /usr/local/bin/lemon-notify
+  config-wrapper.sh         # Thin wrapper installed to /usr/local/bin/lemon-config
   uninstall.sh              # Tears down Docker, systemd units, config files, repo
   lemon-status.sh           # Health overview (called via wrapper)
   smoke-test.sh             # Post-deploy smoke test (called via wrapper)
+  notify.sh                 # Send push notifications via NTFY (called via wrapper)
+  lemon-health.sh           # Daily health check script (called by systemd timer)
+  lemon-health.service      # systemd oneshot for health check
+  lemon-health.timer        # systemd timer (daily, runs lemon-health.service)
 docker/
   docker-compose.yml, .env
   caddy/Dockerfile, Caddyfile
@@ -68,6 +81,7 @@ docker/
   icecast/icecast.xml
   ices/Dockerfile, stream.sh
   ntfy/config/server.yml
+  ntfy/Guide.md
   canarytokens/frontend.env, switchboard.env, Guide.md
 ```
 
@@ -118,4 +132,9 @@ docker/
 - `smoke-test.sh`: added `-connect_timeout 5` to `openssl s_client`, curl availability check for HTTPS section
 - `generate-configs.sh`: `pkg_install openssl` ensures required tool before 5x `openssl rand` calls
 - `install.sh` export block: documented `SYNAPSE_DB_PASSWORD`, `NEXTCLOUD_DB_PASSWORD`, `MATRIX_SECRET_KEY`, `GITEA_SECRET_KEY`
+- `host/notify.sh`: sends push notifications via `docker compose exec ntfy ntfy publish` (no port needed), installed as `lemon-notify`
+- `docker/ntfy/Guide.md`: user-facing docs with curl examples, priority levels, mobile/desktop subscribe — `sed_fill` replaces tokens during install
+- `host/lemon-health.sh` + `.service` + `.timer`: systemd daily health check (06:00 ± 1h), runs smoke test and sends NTFY alert on failure
+- `scripts/upgrade.sh`: git pull + `.env` key verification vs `.env.example` + calls `update.sh`; installed as `upgrade`
+- `scripts/config.sh`: menu-driven reconfiguration (domain, passwords, services, apply); installed as `lemon-config`
 
