@@ -39,11 +39,16 @@ detect_os() {
     echo "📦 Detected: $OS_NAME (using $PKG_MANAGER)"
 }
 
+_pkg_updated=false
+
 pkg_install() {
     echo "   Installing: $*"
     case "$PKG_MANAGER" in
         apt)
-            apt update --quiet
+            if ! $_pkg_updated; then
+                apt update --quiet
+                _pkg_updated=true
+            fi
             apt install --yes --quiet "$@"
             ;;
         dnf)
@@ -60,6 +65,7 @@ pkg_update() {
     case "$PKG_MANAGER" in
         apt)
             apt update --quiet
+            _pkg_updated=true
             ;;
         dnf)
             dnf check-update --quiet || true
