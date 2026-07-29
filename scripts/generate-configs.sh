@@ -26,6 +26,10 @@ generate_configs() {
     echo "   Generating Matrix signing key..."
     MATRIX_SECRET_KEY=$(openssl rand -hex 32)
 
+    # Generate Gitea secret key
+    echo "   Generating Gitea secret key..."
+    GITEA_SECRET_KEY=$(openssl rand -hex 32)
+
     # Generate NTFY auth token
     echo "   Generating NTFY auth token..."
     NTFY_TOKEN=$(openssl rand -hex 32)
@@ -65,6 +69,7 @@ generate_configs() {
             -e "s|{{NEXTCLOUD_DB_PASSWORD}}|$NEXTCLOUD_DB_PASSWORD|g" \
             -e "s|{{MATRIX_SERVER_NAME}}|$MATRIX_SERVER_NAME|g" \
             -e "s|{{MATRIX_SECRET_KEY}}|$MATRIX_SECRET_KEY|g" \
+            -e "s|{{GITEA_SECRET_KEY}}|$GITEA_SECRET_KEY|g" \
             -e "s|{{ICECAST_SOURCE_PASS}}|$ICECAST_SOURCE_PASS|g" \
             -e "s|{{QBIT_SAVE_PATH}}|$QBIT_SAVE_PATH|g" \
             -e "s|{{NTFY_TOPIC}}|$NTFY_TOPIC|g" \
@@ -111,7 +116,7 @@ generate_configs() {
     chown 1000:1000 "$src_dir/docker/gitea/data/gitea/conf/" 2>/dev/null || true
 
     # Export generated values for later use
-    export MATRIX_SECRET_KEY NTFY_TOKEN SYNAPSE_DB_PASSWORD NEXTCLOUD_DB_PASSWORD
+    export MATRIX_SECRET_KEY GITEA_SECRET_KEY NTFY_TOKEN SYNAPSE_DB_PASSWORD NEXTCLOUD_DB_PASSWORD
 
     echo "✅ Configs generated"
 }
