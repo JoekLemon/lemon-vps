@@ -113,9 +113,9 @@ echo "════════════════════════�
 # Create data directories
 echo "   Creating data directories..."
 mkdir --parents "$SRC_DIR/docker/caddy/data"
-    mkdir --parents "$SRC_DIR/docker/synapse/data"
-    mkdir --parents "$SRC_DIR/docker/synapse/postgres"
-    mkdir --parents "$SRC_DIR/docker/nextcloud/data"
+mkdir --parents "$SRC_DIR/docker/synapse/data"
+mkdir --parents "$SRC_DIR/docker/synapse/postgres"
+mkdir --parents "$SRC_DIR/docker/nextcloud/data"
 mkdir --parents "$SRC_DIR/docker/gitea/data"
 mkdir --parents "$SRC_DIR/docker/ntfy/data"
 mkdir --parents "$SRC_DIR/docker/qbittorrent/config"
