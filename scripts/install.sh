@@ -332,6 +332,12 @@ cp "$SRC_DIR/host/update-wrapper.sh" /usr/local/bin/update
 chmod 755 /usr/local/bin/update
 cp "$SRC_DIR/host/lemon-status.sh" /usr/local/bin/lemon-status
 chmod 755 /usr/local/bin/lemon-status
+cp "$SRC_DIR/host/smoke-test.sh" /usr/local/bin/lemon-smoke
+chmod 755 /usr/local/bin/lemon-smoke
+
+# ── Smoke test ──
+echo "   Running smoke test..."
+bash "$SRC_DIR/host/smoke-test.sh" || true
 
 # ── Summary ──
 echo ""
@@ -376,8 +382,9 @@ echo "  docker/nextcloud/Guide.md    — Desktop/mobile apps, cron, performance"
 echo "  docker/gitea/Guide.md        — CI/CD workflows, runner management"
 echo "  host/crowdsec/Guide.md       — Bouncer setup, testing bans"
 echo "  docker/canarytokens/Guide.md — Token creation, NTFY alerts"
-echo "  Run 'sudo update' to pull latest code and restart services"
-echo "  Run 'sudo lemon-status' for a quick health overview"
+  echo "  Run 'sudo update' to pull latest code and restart services"
+  echo "  Run 'sudo lemon-status' for a quick health overview"
+  echo "  Run 'sudo lemon-smoke' for a full smoke test"
 echo ""
 echo "  Next steps:"
 echo "  1. Point your DNS subdomains to this VPS IP"
