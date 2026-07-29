@@ -17,10 +17,6 @@ source "$SRC_DIR/scripts/common.sh"
 echo "🔄 Updating lemon-vps..."
 echo ""
 
-# ── Pull latest code ──
-echo "── Git ──"
-git -C "$SRC_DIR" pull --ff-only || echo "   ⚠️  Git pull failed"
-
 # ── Update Docker containers ──
 echo "── Docker ──"
 if ! command -v docker > /dev/null 2>&1 || ! docker compose version > /dev/null 2>&1; then
