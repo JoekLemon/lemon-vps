@@ -47,7 +47,12 @@ generate_configs() {
         echo "   Generating Canarytokens WireGuard key seed..."
         CANARYTG_WG_KEY_SEED=$(dd bs=32 count=1 if=/dev/urandom 2>/dev/null | base64)
         echo "   Detecting VPS public IP for Canarytokens..."
-        VPS_PUBLIC_IP=$(curl --fail --silent --show-error https://api.ipify.org || curl --fail --silent --show-error https://ifconfig.co)
+        VPS_PUBLIC_IP=$(curl --fail --silent --show-error https://api.ipify.org \
+            || curl --fail --silent --show-error https://ifconfig.co \
+            || curl --fail --silent --show-error https://icanhazip.com \
+            || curl --fail --silent --show-error https://checkip.amazonaws.com \
+            || dig +short myip.opendns.com @resolver1.opendns.com 2>/dev/null \
+            || echo "unknown")
     fi
 
     # sed in-place replacement
