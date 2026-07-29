@@ -12,9 +12,8 @@ generate_configs() {
 
     echo "🔧 Configuring files..."
 
-    # Generate WireGuard tools (needed for add-peer.sh later)
-    echo "   Installing WireGuard tools..."
-    pkg_install wireguard-tools
+    # Ensure required tools are installed
+    pkg_install openssl wireguard-tools
 
     # Generate Matrix signing key
     echo "   Generating Matrix signing key..."
