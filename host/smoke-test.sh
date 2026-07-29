@@ -48,7 +48,7 @@ check_https() {
     if command -v openssl > /dev/null 2>&1; then
         local cert_info
         cert_info=$(echo | openssl s_client -connect "127.0.0.1:443" \
-            -servername "$fqdn" 2>/dev/null)
+            -servername "$fqdn" -connect_timeout 5 2>/dev/null)
         expiry=$(echo "$cert_info" | openssl x509 -noout -enddate 2>/dev/null | cut -d= -f2- | cut -d' ' -f1,2,4)
         issuer=$(echo "$cert_info" | openssl x509 -noout -issuer 2>/dev/null | cut -d= -f2- | sed 's/^CN = //' | cut -d, -f1)
         ok "$fqdn  (HTTP $code, cert until $expiry, $issuer)"
@@ -106,23 +106,27 @@ done
 # ── Section: HTTPS Endpoints ──
 echo ""
 echo "── HTTPS ──"
-check_https matrix /_matrix/client/versions
-check_https cloud /status.php
-check_https git /
-check_https torrent /
-check_https ntfy /v1/health
-check_https proxy /
+if ! command -v curl > /dev/null 2>&1; then
+    printf "  \u2013 curl not installed — skipping HTTPS checks\n"
+else
+    check_https matrix /_matrix/client/versions
+    check_https cloud /status.php
+    check_https git /
+    check_https torrent /
+    check_https ntfy /v1/health
+    check_https proxy /
 
-for svc in icecast; do
-    if docker ps --filter "name=docker-${svc}-1" --format '{{.Status}}' 2>/dev/null | head -1 | grep -q .; then
-        check_https radio /status.xsl
-    fi
-done
-for svc in canary-frontend; do
-    if docker ps --filter "name=docker-${svc}-1" --format '{{.Status}}' 2>/dev/null | head -1 | grep -q .; then
-        check_https canary /
-    fi
-done
+    for svc in icecast; do
+        if docker ps --filter "name=docker-${svc}-1" --format '{{.Status}}' 2>/dev/null | head -1 | grep -q .; then
+            check_https radio /status.xsl
+        fi
+    done
+    for svc in canary-frontend; do
+        if docker ps --filter "name=docker-${svc}-1" --format '{{.Status}}' 2>/dev/null | head -1 | grep -q .; then
+            check_https canary /
+        fi
+    done
+fi
 
 # ── Section: System Services ──
 echo ""
