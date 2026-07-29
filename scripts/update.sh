@@ -11,6 +11,8 @@ set -o errexit
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SRC_DIR="$(dirname "$SCRIPT_DIR")"
+# shellcheck source=common.sh
+source "$SRC_DIR/scripts/common.sh"
 
 echo "🔄 Updating lemon-vps..."
 echo ""
@@ -23,13 +25,7 @@ git -C "$SRC_DIR" pull --ff-only || echo "   ⚠️  Git pull failed"
 echo "── Docker ──"
 cd "$SRC_DIR/docker"
 
-PROFILES=""
-if docker compose ps 2>/dev/null | grep -q "icecast"; then
-    PROFILES="$PROFILES --profile icecast"
-fi
-if docker compose ps 2>/dev/null | grep -q "canary"; then
-    PROFILES="$PROFILES --profile canarytokens"
-fi
+PROFILES=$(detect_docker_profiles "$SRC_DIR/docker")
 
 echo "   Pulling latest images..."
 docker compose $PROFILES pull

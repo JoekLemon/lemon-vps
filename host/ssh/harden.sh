@@ -11,6 +11,11 @@ Notes:          Run during install or standalone. Requires SSH key to already
 
 set -o errexit
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SRC_DIR="$(dirname "$(dirname "$SCRIPT_DIR")")"
+# shellcheck source=../../scripts/common.sh
+source "$SRC_DIR/scripts/common.sh"
+
 SSHD_CONFIG="/etc/ssh/sshd_config"
 BACKUP="/etc/ssh/sshd_config.lemon-vps.bak"
 
@@ -48,55 +53,13 @@ fi
 
 # Apply settings
 echo "   Applying SSH hardening..."
-
-# PermitRootLogin
-if grep -q "^PermitRootLogin" "$SSHD_CONFIG"; then
-    sed -i 's/^PermitRootLogin.*/PermitRootLogin prohibit-password/' "$SSHD_CONFIG"
-else
-    echo "PermitRootLogin prohibit-password" >> "$SSHD_CONFIG"
-fi
-
-# PasswordAuthentication
-if grep -q "^PasswordAuthentication" "$SSHD_CONFIG"; then
-    sed -i 's/^PasswordAuthentication.*/PasswordAuthentication no/' "$SSHD_CONFIG"
-else
-    echo "PasswordAuthentication no" >> "$SSHD_CONFIG"
-fi
-
-# ChallengeResponseAuthentication
-if grep -q "^ChallengeResponseAuthentication" "$SSHD_CONFIG"; then
-    sed -i 's/^ChallengeResponseAuthentication.*/ChallengeResponseAuthentication no/' "$SSHD_CONFIG"
-else
-    echo "ChallengeResponseAuthentication no" >> "$SSHD_CONFIG"
-fi
-
-# PubkeyAuthentication
-if grep -q "^PubkeyAuthentication" "$SSHD_CONFIG"; then
-    sed -i 's/^PubkeyAuthentication.*/PubkeyAuthentication yes/' "$SSHD_CONFIG"
-else
-    echo "PubkeyAuthentication yes" >> "$SSHD_CONFIG"
-fi
-
-# MaxAuthTries
-if grep -q "^MaxAuthTries" "$SSHD_CONFIG"; then
-    sed -i 's/^MaxAuthTries.*/MaxAuthTries 3/' "$SSHD_CONFIG"
-else
-    echo "MaxAuthTries 3" >> "$SSHD_CONFIG"
-fi
-
-# ClientAliveInterval
-if grep -q "^ClientAliveInterval" "$SSHD_CONFIG"; then
-    sed -i 's/^ClientAliveInterval.*/ClientAliveInterval 300/' "$SSHD_CONFIG"
-else
-    echo "ClientAliveInterval 300" >> "$SSHD_CONFIG"
-fi
-
-# ClientAliveCountMax
-if grep -q "^ClientAliveCountMax" "$SSHD_CONFIG"; then
-    sed -i 's/^ClientAliveCountMax.*/ClientAliveCountMax 2/' "$SSHD_CONFIG"
-else
-    echo "ClientAliveCountMax 2" >> "$SSHD_CONFIG"
-fi
+set_sshd_option PermitRootLogin prohibit-password "$SSHD_CONFIG"
+set_sshd_option PasswordAuthentication no "$SSHD_CONFIG"
+set_sshd_option ChallengeResponseAuthentication no "$SSHD_CONFIG"
+set_sshd_option PubkeyAuthentication yes "$SSHD_CONFIG"
+set_sshd_option MaxAuthTries 3 "$SSHD_CONFIG"
+set_sshd_option ClientAliveInterval 300 "$SSHD_CONFIG"
+set_sshd_option ClientAliveCountMax 2 "$SSHD_CONFIG"
 
 # Restart SSH
 echo "   Restarting SSH..."

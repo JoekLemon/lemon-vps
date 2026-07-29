@@ -13,6 +13,8 @@ set -o errexit
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SRC_DIR="$(dirname "$SCRIPT_DIR")"
+# shellcheck source=../scripts/common.sh
+source "$SRC_DIR/scripts/common.sh"
 
 if [ "$EUID" -ne 0 ]; then
     echo "❌ This script must be run as root"
@@ -29,13 +31,7 @@ echo "── Docker ──"
 if command -v docker > /dev/null 2>&1 && docker compose version > /dev/null 2>&1; then
     cd "$SRC_DIR/docker" 2>/dev/null || cd /opt/lemon-vps/docker 2>/dev/null || true
 
-    PROFILES=""
-    if docker compose ps 2>/dev/null | grep -q "icecast"; then
-        PROFILES="$PROFILES --profile icecast"
-    fi
-    if docker compose ps 2>/dev/null | grep -q "canary"; then
-        PROFILES="$PROFILES --profile canarytokens"
-    fi
+    PROFILES=$(detect_docker_profiles "$SRC_DIR/docker")
 
     echo "   Stopping containers..."
     docker compose $PROFILES down

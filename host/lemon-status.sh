@@ -7,32 +7,24 @@ Contributors:
 Notes:          Installed to /usr/local/bin/lemon-status. Run with sudo.
 '
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SRC_DIR="$(dirname "$SCRIPT_DIR")"
+# shellcheck source=../scripts/common.sh
+source "$SRC_DIR/scripts/common.sh"
+
 echo "🍋 lemon-vps Status"
 echo ""
 
 # ── Docker containers ──
 echo "── Docker ──"
 if command -v docker > /dev/null 2>&1; then
-    SERVICES="caddy postgres synapse nextcloud redis gitea gitea-runner qbittorrent ntfy"
-    for svc in $SERVICES; do
-        state=$(docker ps --filter "name=docker-$svc-1" --format '{{.Status}}' 2>/dev/null | head -1)
-        if [ -n "$state" ]; then
-            echo "  $svc        running  ($state)"
-        else
-            # Check if container exists but is stopped
-            exists=$(docker ps -a --filter "name=docker-$svc-1" --format '{{.Status}}' 2>/dev/null | head -1)
-            if [ -n "$exists" ]; then
-                echo "  $svc        stopped  ($exists)"
-            else
-                echo "  $svc        —        (not deployed)"
-            fi
-        fi
+    for svc in caddy postgres synapse nextcloud redis gitea gitea-runner qbittorrent ntfy; do
+        check_docker_svc "$svc"
     done
-    # Profile-gated services
     for svc in icecast ices canary-redis canary-frontend canary-switchboard; do
         state=$(docker ps --filter "name=docker-$svc-1" --format '{{.Status}}' 2>/dev/null | head -1)
         if [ -n "$state" ]; then
-            echo "  $svc  running  ($state)"
+            check_docker_svc "$svc"
         fi
     done
 else
@@ -42,19 +34,9 @@ fi
 # ── System services ──
 echo ""
 echo "── System Services ──"
-for svc in wg-quick@wg0 crowdsec clamav-daemon clamav-freshclam nextdns docker; do
-    if systemctl is-active --quiet "$svc" 2>/dev/null; then
-        echo "  $svc  active"
-    else
-        echo "  $svc  inactive"
-    fi
-done
-for svc in lemon-clamonacc lemon-clamscan.timer; do
-    if systemctl is-active --quiet "$svc" 2>/dev/null; then
-        echo "  $svc  active"
-    else
-        echo "  $svc  inactive"
-    fi
+for svc in wg-quick@wg0 crowdsec clamav-daemon clamav-freshclam nextdns docker \
+           lemon-clamonacc lemon-clamscan.timer; do
+    check_systemd_svc "$svc"
 done
 
 # ── UFW ──
