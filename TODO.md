@@ -8,7 +8,7 @@
 
 ## High
 
-- [ ] **CrowdSec Guide references wrong bouncer**: `host/crowdsec/Guide.md` uses `crowdsec-firewall-bouncer-ufw` throughout but install.sh uses `crowdsec-firewall-bouncer-iptables` (intentional per PLAN.md). Users following the Guide get "unit not found" errors.
+- [x] **CrowdSec Guide references wrong bouncer**: Updated all refs in `host/crowdsec/Guide.md` — `crowdsec-firewall-bouncer-ufw` → `crowdsec-firewall-bouncer-iptables`.
 - [ ] **Icecast GUI unstyled**: `<fileserve>` block missing `<enabled>1</enabled>` — static assets (CSS, images, favicon) return 404. Fix in `docker/icecast/icecast.xml` and recreate container.
 
 ## Medium

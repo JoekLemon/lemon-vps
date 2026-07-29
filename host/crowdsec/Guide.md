@@ -28,7 +28,7 @@ You'll be prompted for these during the lemon-vps installation.
 The installer will:
 
 1. Add the CrowdSec repository
-2. Install CrowdSec and the UFW bouncer
+2. Install CrowdSec and the iptables firewall bouncer
 3. Configure your API credentials
 4. Enroll your instance with the console
 
@@ -47,14 +47,14 @@ sudo cscli alerts list
 
 ## Step 5: Verify Bouncer
 
-The UFW bouncer enforces bans at the firewall level:
+The iptables firewall bouncer enforces bans at the firewall level:
 
 ```bash
 # Check bouncer is active
-sudo systemctl status crowdsec-firewall-bouncer-ufw
+sudo systemctl status crowdsec-firewall-bouncer-iptables
 
 # View bouncer logs
-sudo journalctl -u crowdsec-firewall-bouncer-ufw
+sudo journalctl -u crowdsec-firewall-bouncer-iptables
 ```
 
 ## Step 6: Test Protection
@@ -161,7 +161,7 @@ sudo cscli bouncers list
 sudo ufw status
 
 # Restart bouncer
-sudo systemctl restart crowdsec-firewall-bouncer-ufw
+sudo systemctl restart crowdsec-firewall-bouncer-iptables
 ```
 
 ### No alerts appearing
