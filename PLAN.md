@@ -22,7 +22,7 @@ Docker containers: Caddy, Matrix Synapse, NextCloud, Redis, Gitea, Gitea Runner,
 - Gitea runner: auto-registers via `GITEA_RUNNER_REGISTRATION_TOKEN` env var, persisted in named Docker volume
 
 ## Status
-All planned bug fixes and features are complete. See [`TODO.md`](./TODO.md) for the single remaining item (Kasm).
+All planned bug fixes and features are complete. See [`TODO.md`](./TODO.md) for upcoming services (Kasm, Postfix, RSS) and maintenance improvements.
 
 ### Next Steps
 1. Run `sudo lemon-smoke` for a full post-deploy smoke test (containers, HTTPS, TLS certs, services)

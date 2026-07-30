@@ -28,6 +28,34 @@ Resource budget (CX42, 16 GB):
 - Each workspace session defaults to 2.8 GiB / 2 cores — must lower in Admin UI
 - Requires 8+ GiB swap for stability
 
+### Postfix (Mail Server)
+Relay-only SMTP for transactional emails (password resets, notifications) from Gitea, NextCloud, and Synapse.
+
+- [ ] Evaluate: host-level Postfix vs Docker container
+- [ ] Add UFW rules for port 25 (outbound-only relay)
+- [ ] Configure relay-only outbound SMTP (no inbound, no IMAP)
+- [ ] Wire up service-specific SMTP configs in Gitea, NextCloud, Synapse
+
+### RSS Aggregator (e.g. Miniflux)
+Self-hosted RSS reader with subdomain access. Miniflux is the leading candidate (Go binary, PostgreSQL backend, lightweight).
+
+- [ ] `docker/docker-compose.yml`: add `miniflux` service (`--profile rss`)
+- [ ] `docker/caddy/Caddyfile`: add `rss.{{DOMAIN}}` → `miniflux:8080`
+- [ ] `docker/.env`: add `MINIFLUX_VERSION=latest`, `MINIFLUX_DB_PASSWORD={{PLACEHOLDER}}`
+- [ ] `docker/.env.example`: mirror new vars
+- [ ] `scripts/prompts.sh`: add `ENABLE_RSS` prompt (default n)
+- [ ] `scripts/generate-configs.sh`: generate `MINIFLUX_DB_PASSWORD`, fill configs
+- [ ] `scripts/install.sh`: create DB/user in postgres, `--profile rss`
+
+### Review: Post-Install Commands
+Audit `sudo update` and `sudo upgrade` for completeness and robustness.
+
+- [ ] `scripts/update.sh`: verify coverage of all running services (nextdns, wireguard, caddy rebuild?)
+- [ ] `scripts/upgrade.sh`: verify `.env` key diff against actual required keys after git pull
+- [ ] `scripts/upgrade.sh`: confirm config templates are re-applied (regenerated) after pull
+- [ ] Add `lemon-notify` alert on update/upgrade failure
+- [ ] Improve logging/output clarity for both scripts
+
 ## Completed
 
 ### Critical
